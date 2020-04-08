@@ -35,6 +35,8 @@ We recommend the Notary Node Operators to check the Table at [https://github.com
 - **GAME:** [https://github.com/gamecredits-project/GameCredits.git](https://github.com/gamecredits-project/GameCredits.git) Branch: `master`
 - **GIN:** [https://github.com/GIN-coin/gincoin-core.git](https://github.com/GIN-coin/gincoin-core.git) Branch: `master`
 - **CHIPS:** [https://github.com/jl777/chips3.git](https://github.com/jl777/chips3.git) Branch: `dev`
+- **AYA:** [https://github.com/sillyghost/AYAv2.git](https://github.com/sillyghost/AYAv2.git) Branch: `master`
+- **MCL:** [https://github.com/marmarachain/Marmara-v.1.0.git](https://github.com/marmarachain/Marmara-v.1.0.git) Branch: `master`
 
 ## Requirements
 
@@ -344,17 +346,6 @@ Restrict access to the `bitcoin.conf` file
 chmod 600 ~/.bitcoin/bitcoin.conf
 ```
 
-### HUSH3
-
-#### Clone HUSH3 source and compile
-
-```bash
-cd ~
-git clone https://github.com/KomodoPlatform/komodo --branch hush3 --single-branch hush3
-cd hush3 && git checkout cc35198f1da23a617caf95ed087033d8dfb8ce89
-./zcutil/build.sh -j$(nproc)
-```
-
 ### VerusCoin (VRSC)
 
 #### Clone VRSC source and compile
@@ -371,6 +362,10 @@ Symlink the compiled binary
 ```bash
 sudo ln -sf /home/$USER/VerusCoin/src/verusd /usr/local/bin/verusd
 ```
+
+### DPOW chain
+
+[https://github.com/CHMEX/dPoW/blob/master/doc/DPOWchain.md](https://github.com/CHMEX/dPoW/blob/master/doc/DPOWchain.md)
 
 ### Start the daemons and sync all the chains
 
@@ -532,6 +527,17 @@ Restrict access to the `chips.conf` file
 
 ```bash
 chmod 600 ~/.chips/chips.conf
+```
+
+### HUSH3
+
+#### Clone HUSH3 source and compile
+
+```bash
+cd ~
+git clone https://github.com/KomodoPlatform/komodo --branch hush3 --single-branch hush3
+cd hush3 && git checkout master
+./zcutil/build.sh -j$(nproc)
 ```
 
 ### GameCredits (GAME)
@@ -796,6 +802,97 @@ Restrict access to the `gincoin.conf` file
 chmod 600 ~/.gincoincore/gincoin.conf
 ```
 
+### Aryacoin (AYA)
+
+#### Step 1: Clone AYA source
+
+```bash
+cd ~
+git clone https://github.com/sillyghost/AYAv2.git -b master --single-branch
+cd AYAv2
+```
+
+#### Step 2: Create a build script
+
+Name the script as `build.sh` inside the `~/AYAv2` dir for easy compiling and add the contents below to the script. The script will also create symlinks gor the binaries at `/usr/local/bin/` and for that, you will be asked to provide the `sudo` password.
+
+```bash
+#!/bin/bash
+# AYA build script for Ubuntu & Debian 9 v.3 (c) Decker (and webworker)
+berkeleydb () {
+    AYA_ROOT=$(pwd)
+    AYA_PREFIX="${AYA_ROOT}/db4"
+    mkdir -p $AYA_PREFIX
+    wget -N 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
+    echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
+    tar -xzvf db-4.8.30.NC.tar.gz
+    cd db-4.8.30.NC/build_unix/
+
+    ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$AYA_PREFIX
+
+    make install
+    cd $AYA_ROOT
+}
+
+buildAYA () {
+    git pull
+    ./autogen.sh
+    ./configure LDFLAGS="-L${AYA_PREFIX}/lib/" CPPFLAGS="-I${AYA_PREFIX}/include/" --with-gui=no --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --enable-static --disable-shared --with-incompatible-bdb
+    make -j$(nproc)
+}
+
+berkeleydb
+buildAYA
+echo "Done building AYA!"
+
+sudo ln -sf /home/$USER/AYAv2/src/aryacoin-cli /usr/local/bin/aryacoin-cli
+sudo ln -sf /home/$USER/AYAv2/src/aryacoind /usr/local/bin/aryacoind
+```
+
+#### Step 3: Make the script executable and run it
+
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+#### Step 4: Create AYA data dir, `aryacoin.conf` file and restrict access to it
+
+```bash
+cd ~
+mkdir .aryacoin
+nano ~/.aryacoin/aryacoin.conf
+```
+
+Insert the following contents inside the `aryacoin.conf` file and save it. (change the `rpcuser` and `rpcpassword` values)
+
+```bash
+server=1
+daemon=1
+txindex=1
+rpcuser=user
+rpcpassword=password
+bind=127.0.0.1
+rpcbind=127.0.0.1
+rpcallowip=127.0.0.1
+```
+
+Restrict access to the `aryacoin.conf` file
+
+```bash
+chmod 600 ~/.aryacoin/aryacoin.conf
+```
+### MARMARA (MCL)
+
+#### Clone MCL source and compile
+
+```bash
+cd ~
+git clone https://github.com/marmarachain/Marmara-v.1.0.git 
+cd Marmara-v.1.0 && git checkout master
+./zcutil/build.sh -j$(nproc)
+```
+
 ### Start the daemons and sync all the chains
 
 For the first time sync, we will run all the coin daemons normally. Make sure you have successfully compiled all the daemons from the above section. We will create a `start` script later in this guide to start the chains with `-pubkey` option for notarisation.
@@ -808,6 +905,8 @@ chipsd &
 gamecreditsd &
 einsteiniumd &
 gincoind &
+aryacoind &
+/home/$USER/Marmara-v.1.0/src/komodod -ac_name=MCL -ac_supply=2000000 -ac_cc=2 -addnode=37.148.210.158 -addnode=37.148.212.36 -addressindex=1 -spentindex=1 -ac_marmara=1 -ac_staked=75 -ac_reward=3000000000 &
 ```
 
 Now wait for all the chains to finish syncing. This might take about 8-10 hours depending on your machine and internet connection. You can check check sync progress by using `tail -f` on the `debug.log` file in the respective coin data directories.
@@ -825,6 +924,10 @@ tail -f ~/.gamecredits/debug.log
 tail -f ~/.einsteinium/debug.log
 # GIN
 tail -f ~/.gincoincore/debug.log
+# AYA
+tail -f ~/.aryacoin/debug.log
+# MCL
+tail -f ~/.komodo/MCL/debug.log
 ```
 
 You can now wait for all the coins to finish syncing. Just double check the block you've downloaded with an explorer to verify.
@@ -836,11 +939,13 @@ Feel free to import your addresses whilst your daemons are syncing.
 - Follow the example below to import your 3rd party pubkey **only** into your coin daemons.
 
 ```bash
-komodo-cli importprivkey UtrRXqvRFUAtCrCTRAHPH6yroQKUrrTJRmxt2h5U4QTUN1jCxTAh
-chips-cli importprivkey UtrRXqvRFUAtCrCTRAHPH6yroQKUrrTJRmxt2h5U4QTUN1jCxTAh
-gamecredits-cli importprivkey Re6YxHzdQ61rmTuZFVbjmGu9Kqu8VeVJr4G1ihTPFsspAjGiErDL
-einsteinium-cli importprivkey T7trfubd9dBEWe3EnFYfj1r1pBueqqCaUUVKKEvLAfQvz3JFsNhs
-gincoin-cli importprivkey WNejFTXR11LFx2L8wvEKEqvjHkL1D3Aa4CCBdEYQyBzbBKjPLHJQ
+komodo-cli importprivkey <kmd_privkey_wif>
+chips-cli importprivkey <kmd_privkey_wif>
+gamecredits-cli importprivkey <game_privkey_wif>
+einsteinium-cli importprivkey <emc2_privkey_wif>
+gincoin-cli importprivkey <gin_privkey_wif>
+aryacoin-cli importprivkey <aya_privkey_wif>
+komodo-cli -ac_name=MCL importprivkey <kmd_privkey_wif>
 ```
 
 This may take some time and will display the coin name and address after each import. You can tail the coin specific `debug.log` files to check the progress.
@@ -873,6 +978,9 @@ chips-cli stop
 gamecredits-cli stop
 einsteinium-cli stop
 gincoin-cli stop
+hush-cli stop
+aryacoin-cli stop
+komodo-cli -ac_name=MCL stop
 ```
 
 ---
@@ -939,14 +1047,13 @@ Here is an example of a Main Server start script that will start Notary easy min
 ```bash
 #!/bin/bash
 source ~/komodo/src/pubkey.txt
-bitcoind &
-~/hush3/src/hushd -pubkey=$pubkey &
-~/VerusCoin/src/verusd -pubkey=$pubkey &
+
+bitcoind -deprecatedrpc=estimatefee &
+/home/$USER/VerusCoin/src/verusd -pubkey=$pubkey &
+/home/$USER/komodo/src/komodod -gen -genproclimit=1 -notary -pubkey=$pubkey -minrelaytxfee=0.000035 -opretmintxfee=0.004 &
+/home/eclips/dexkomodo/src/komodod -ac_name=DPOW -dexp2p=2 -addnode=136.243.58.134 -pubkey=$PUBKEY3RD -handle=$NAME &
 sleep 60
-cd komodo/src
-./komodod -gen -genproclimit=1 -notary -pubkey=$pubkey &
-sleep 600
-./assetchains
+/home/$USER/komodo/src/assetchains
 ```
 
 Here is an example of a 3rd Party Server start script :
@@ -954,13 +1061,14 @@ Here is an example of a 3rd Party Server start script :
 ```bash
 #!/bin/bash
 source ~/komodo/src/pubkey.txt
-chipsd -pubkey=$pubkey &
-gamecreditsd -pubkey=$pubkey &
-einsteiniumd -pubkey=$pubkey &
-gincoind -pubkey=$pubkey &
-sleep 60
-cd komodo/src
-./komodod -pubkey=$pubkey &
+/home/$USER/game/src/gamecreditsd -pubkey=$pubkey &
+/home/$USER/chips3/src/chipsd -pubkey=$pubkey &
+/home/$USER/komodo/src/komodod -pubkey=$pubkey -minrelaytxfee=0.000035 -opretmintxfee=0.004 &
+/home/$USER/einsteinium/src/einsteiniumd -pubkey=$pubkey &
+/home/$USER/gincoin/src/gincoind -pubkey=$pubkey &
+/home/$USER/hush3/src/hushd -pubkey=$pubkey &
+/home/$USER/Marmara-v.1.0/src/komodod -ac_name=MCL -ac_supply=2000000 -ac_cc=2 -addnode=37.148.210.158 -addnode=37.148.212.36 -addressindex=1 -spentindex=1 -ac_marmara=1 -ac_staked=75 -ac_reward=3000000000 -pubkey=$pubkey &
+/home/$USER/AYAv2/src/aryacoind -pubkey=$pubkey &
 ```
 
 Make the file executable:

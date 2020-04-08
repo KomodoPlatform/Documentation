@@ -1051,7 +1051,7 @@ source ~/komodo/src/pubkey.txt
 bitcoind -deprecatedrpc=estimatefee &
 /home/$USER/VerusCoin/src/verusd -pubkey=$pubkey &
 /home/$USER/komodo/src/komodod -gen -genproclimit=1 -notary -pubkey=$pubkey -minrelaytxfee=0.000035 -opretmintxfee=0.004 &
-/home/$USER/dexkomodo/src/komodod -ac_name=DPOW -dexp2p=2 -addnode=136.243.58.134 -pubkey=$PUBKEY3RD -handle=$NAME &
+/home/$USER/dexkomodo/src/komodod -ac_name=DPOW -dexp2p=2 -addnode=136.243.58.134 -pubkey=$pubkey -handle=$handle &
 sleep 60
 /home/$USER/komodo/src/assetchains
 ```

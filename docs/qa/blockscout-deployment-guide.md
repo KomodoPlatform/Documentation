@@ -15,7 +15,7 @@ Prepare user with sudo privileges, ssh access, domain name, ensure basic server 
 ::: tip Note
 
 - bash commands below are for reference only, please do not copy/paste them mindlessly, or you may expect encountering brocken links and weird paths.
--Commands noted with `\$` should be execute as your user, under whom blockscout service will be running. `\#` meant to be ran as root. `\=#` commands are executed in psql.
+- Commands noted with `\$` should be execute as your user, under whom blockscout service will be running. `\#` meant to be ran as root. `\=#` commands are executed in psql.
 - [Blockscout reqs](https://docs.blockscout.com/for-developers/information-and-settings/requirements) seems to be outdated, you may use latest stable releases instead. Anyway, you will be notified by BlockScout later down the road if some binary version is not supported.
 
 :::

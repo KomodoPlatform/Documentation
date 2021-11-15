@@ -54,7 +54,7 @@ Open a second terminal window, and start the block explorer:
 cat HELLO-webaccess
 
 # run the script to start the explorer
-./RICK-explorer-start.sh
+./HELLO-explorer-start.sh
 ```
 
 You should now be able to open a new tab in your web browser, and paste the explorer URL to have a look make sure it is working. You can repeat the process above for any additional Smart Chain explorers you have running on your node.

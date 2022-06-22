@@ -703,8 +703,8 @@ CXXFLAGS="-g0 -O2" \
 CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
 
 make V=1 -j$(nproc --all)
-sudo ln -sf /home/$USER/mil-1/src/mil-cli /usr/local/bin/mil-cli
-sudo ln -sf /home/$USER/mil-1/src/mild /usr/local/bin/mild
+sudo ln -sf /home/$USER/mil/src/mil-cli /usr/local/bin/mil-cli
+sudo ln -sf /home/$USER/mil/src/mild /usr/local/bin/mild
 ```
 
 #### Step 3: Make the script executable and run it

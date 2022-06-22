@@ -44,9 +44,10 @@ You should have at least 64GB RAM and 32 GB [swap space](https://www.digitalocea
 - **EMC2:** [https://github.com/emc2foundation/einsteinium.git](https://github.com/emc2foundation/einsteinium.git) Tree: `c329ae64397bea743054d06b779bb4cbfdcdd25f`
 - **MCL:** [https://github.com/marmarachain/marmara.git](https://github.com/marmarachain/marmara.git) Tree: `a92d8344d3c545b2641a1e04479c90d19588abe7`
 - **MIL:** [https://github.com/emc2foundation/mil.git](https://github.com/emc2foundation/mil.git) Tree: `578bed7f403c4d4a16561317d356202ca60c605f`
-- **SFUSD:** [https://github.com/pbcllc/sfusd-core.git](https://github.com/pbcllc/sfusd-core.git) Tree: `master` (S6 updates not yet merged!)
+- **SFUSD:** [https://github.com/pbcllc/sfusd-core.git](https://github.com/pbcllc/sfusd-core.git) Tree: `4e79e1bbf9faa5305ed1091e863ef081c9272a8e`
 - **TOKEL:** [https://github.com/TokelPlatform/tokel.git](https://github.com/TokelPlatform/tokel.git) Tree: `65d50d07fb5a3bf9cfa57033f1a1c25f4b37511e`
 - **VRSC:** [https://github.com/VerusCoin/VerusCoin.git](https://github.com/VerusCoin/VerusCoin.git) Tag: `master`  (S6 updates not yet merged!)
+
 ## Requirements
 
 ### Hardware

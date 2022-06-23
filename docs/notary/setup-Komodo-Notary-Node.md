@@ -856,8 +856,8 @@ buildMIL () {
 berkeleydb
 buildMIL
 echo "Done building MIL!"
-sudo ln -sf /home/$USER/mil-1/src/mil-cli /usr/local/bin/mil-cli
-sudo ln -sf /home/$USER/mil-1/src/mild /usr/local/bin/mild
+sudo ln -sf /home/$USER/mil/src/mil-cli /usr/local/bin/mil-cli
+sudo ln -sf /home/$USER/mil/src/mild /usr/local/bin/mild
 ```
 
 #### Step 3: Make the script executable and run it
@@ -1271,7 +1271,7 @@ If you are using a whitelist for incoming transactions (recommended to avoid dus
 
 ## Firewall and Ports
 
-Enable `ufw` and close all routes except `ssh`. Then allow p2p ports of all the coins in their respective servers. Allow iguana's p2p ports: `13337` in main server and `13334` in the 3p server.
+Enable `ufw` and close all routes except `ssh`. Then allow p2p ports of all the coins in their respective servers. Allow iguana's p2p ports: `13347` in main server and `13344` in the 3p server.
 
 ## NN Scripts
 

@@ -703,6 +703,7 @@ CXXFLAGS="-g0 -O2" \
 CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
 
 make V=1 -j$(nproc --all)
+
 sudo ln -sf /home/$USER/mil/src/mil-cli /usr/local/bin/mil-cli
 sudo ln -sf /home/$USER/mil/src/mild /usr/local/bin/mild
 ```
@@ -1088,7 +1089,7 @@ If you are using a whitelist for incoming transactions (recommended to avoid dus
 
 ## Firewall and Ports
 
-Enable `ufw` and close all routes except `ssh`. Then allow p2p ports of all the coins in their respective servers. Allow iguana's p2p ports: `13337` in main server and `13334` in the 3p server.
+Enable `ufw` and close all routes except `ssh`. Then allow p2p ports of all the coins in their respective servers. Allow iguana's p2p ports: `13347` in main server and `13344` in the 3p server.
 
 ## NN Scripts
 

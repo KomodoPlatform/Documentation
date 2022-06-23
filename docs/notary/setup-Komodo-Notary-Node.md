@@ -18,7 +18,7 @@ If you face problems, please join the `#notarynode` channel on the [Komodo Disco
 
 ::: tip Note
 
-We recommend the Notary Node Operators to check the Table at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) for latest information on the repositories and branches to run. If there is contradicting information in this document, treat the information at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) as correct and inform the team through the [Komodo Discord Server](https://komodoplatform.com/discord) or by summbiting a Pull Request (PR). Using the **exact** repository and branch/tag recommended is very important for the security of the network.
+We recommend the Notary Node Operators to check the Table at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) for latest information on the repositories and branches to run. If there is contradicting information in this document, treat the information at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) as correct and inform the team through the [Komodo Discord Server](https://komodoplatform.com/discord) or by submitting a Pull Request (PR). Using the **exact** repository and branch/tag recommended is very important for the security of the network.
 
 :::
 
@@ -304,45 +304,15 @@ Name the script as `build.sh` inside the `~/litecoin` dir for easy compiling and
 
 ```bash
 #!/bin/bash
-# LTC build script for Ubuntu & Debian 9 v.3 (c) Decker (and webworker)
-berkeleydb () {
-    LTC_ROOT=$(pwd)
-    LTC_PREFIX="${LTC_ROOT}/db4"
-    mkdir -p $LTC_PREFIX
-    wget -N 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
-    echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
-    tar -xzvf db-4.8.30.NC.tar.gz
-    cat <<-EOL >atomic-builtin-test.cpp
-        #include <stdint.h>
-        #include "atomic.h"
+# LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
+make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
 
-        int main() {
-        db_atomic_t *p; atomic_value_t oldval; atomic_value_t newval;
-        __atomic_compare_exchange(p, oldval, newval);
-        return 0;
-        }
-EOL
-    if g++ atomic-builtin-test.cpp -I./db-4.8.30.NC/dbinc -DHAVE_ATOMIC_SUPPORT -DHAVE_ATOMIC_X86_GCC_ASSEMBLY -o atomic-builtin-test 2>/dev/null; then
-        echo "No changes to bdb source are needed ..."
-        rm atomic-builtin-test 2>/dev/null
-    else
-        echo "Updating atomic.h file ..."
-        sed -i 's/__atomic_compare_exchange/__atomic_compare_exchange_db/g' db-4.8.30.NC/dbinc/atomic.h
-    fi
-    cd db-4.8.30.NC/build_unix/
-    ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$LTC_PREFIX
-    make install
-    cd $LTC_ROOT
-}
-buildLTC () {
-    git pull
-    ./autogen.sh
-    ./configure LDFLAGS="-L${LTC_PREFIX}/lib/" CPPFLAGS="-I${LTC_PREFIX}/include/" --with-gui=no --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --enable-static --disable-shared --with-incompatible-bdb
-    make -j$(nproc)
-}
-berkeleydb
-buildLTC
-echo "Done building LTC!"
+./autogen.sh
+
+CXXFLAGS="-g0 -O2" \
+CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
+
+make V=1 -j$(nproc --all)
 sudo ln -sf /home/$USER/litecoin/src/litecoin-cli /usr/local/bin/litecoin-cli
 sudo ln -sf /home/$USER/litecoin/src/litecoind /usr/local/bin/litecoind
 ```
@@ -495,45 +465,15 @@ Name the script as `build.sh` inside the `~/AYAv2` dir for easy compiling and ad
 
 ```bash
 #!/bin/bash
-# AYA build script for Ubuntu & Debian 9 v.3 (c) Decker (and webworker)
-berkeleydb () {
-    AYA_ROOT=$(pwd)
-    AYA_PREFIX="${AYA_ROOT}/db4"
-    mkdir -p $AYA_PREFIX
-    wget -N 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
-    echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
-    tar -xzvf db-4.8.30.NC.tar.gz
-    cat <<-EOL >atomic-builtin-test.cpp
-        #include <stdint.h>
-        #include "atomic.h"
+# LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
+make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
 
-        int main() {
-        db_atomic_t *p; atomic_value_t oldval; atomic_value_t newval;
-        __atomic_compare_exchange(p, oldval, newval);
-        return 0;
-        }
-EOL
-    if g++ atomic-builtin-test.cpp -I./db-4.8.30.NC/dbinc -DHAVE_ATOMIC_SUPPORT -DHAVE_ATOMIC_X86_GCC_ASSEMBLY -o atomic-builtin-test 2>/dev/null; then
-        echo "No changes to bdb source are needed ..."
-        rm atomic-builtin-test 2>/dev/null
-    else
-        echo "Updating atomic.h file ..."
-        sed -i 's/__atomic_compare_exchange/__atomic_compare_exchange_db/g' db-4.8.30.NC/dbinc/atomic.h
-    fi
-    cd db-4.8.30.NC/build_unix/
-    ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$AYA_PREFIX
-    make install
-    cd $AYA_ROOT
-}
-buildAYA () {
-    git pull
-    ./autogen.sh
-    ./configure LDFLAGS="-L${AYA_PREFIX}/lib/" CPPFLAGS="-I${AYA_PREFIX}/include/" --with-gui=no --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --enable-static --disable-shared --with-incompatible-bdb
-    make -j$(nproc)
-}
-berkeleydb
-buildAYA
-echo "Done building AYA!"
+./autogen.sh
+
+CXXFLAGS="-g0 -O2" \
+CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
+
+make V=1 -j$(nproc --all)
 sudo ln -sf /home/$USER/AYAv2/src/aryacoin-cli /usr/local/bin/aryacoin-cli
 sudo ln -sf /home/$USER/AYAv2/src/aryacoind /usr/local/bin/aryacoind
 ```
@@ -593,52 +533,21 @@ git checkout 6e7560a
 ./build.sh
 ```
 
-##### Debian 10 and Ubuntu 20.04
+##### Debian 10/11 and Ubuntu 20.04
 
 Replace the contents of the `build.sh` file with the following code
 
 ```bash
 #!/bin/bash
+# LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
+make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
 
-berkeleydb() {
-    CHIPS_ROOT=$(pwd)
-    CHIPS_PREFIX="${CHIPS_ROOT}/db4"
-    mkdir -p $CHIPS_PREFIX
-    wget -N 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
-    echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
-    tar -xzvf db-4.8.30.NC.tar.gz
-    cat <<-EOL >atomic-builtin-test.cpp
-        #include <stdint.h>
-        #include "atomic.h"
+./autogen.sh
 
-        int main() {
-        db_atomic_t *p; atomic_value_t oldval; atomic_value_t newval;
-        __atomic_compare_exchange(p, oldval, newval);
-        return 0;
-        }
-EOL
-    if g++ atomic-builtin-test.cpp -I./db-4.8.30.NC/dbinc -DHAVE_ATOMIC_SUPPORT -DHAVE_ATOMIC_X86_GCC_ASSEMBLY -o atomic-builtin-test 2>/dev/null; then
-        echo "No changes to bdb source are needed ..."
-        rm atomic-builtin-test 2>/dev/null
-    else
-        echo "Updating atomic.h file ..."
-        sed -i 's/__atomic_compare_exchange/__atomic_compare_exchange_db/g' db-4.8.30.NC/dbinc/atomic.h
-    fi
-    cd db-4.8.30.NC/build_unix/
-    ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$CHIPS_PREFIX
-    make install
-    cd $CHIPS_ROOT
-}
+CXXFLAGS="-g0 -O2" \
+CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
 
-buildCHIPS() {
-    git pull
-    ./autogen.sh
-    ./configure LDFLAGS="-L${CHIPS_PREFIX}/lib/" CPPFLAGS="-I${CHIPS_PREFIX}/include/" --with-gui=no --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --enable-static --disable-shared
-    make -j$(nproc)
-}
-berkeleydb
-buildCHIPS
-echo "Done building CHIPS!"
+make V=1 -j$(nproc --all)
 ```
 
 then, run the script
@@ -706,47 +615,15 @@ Name the script as `build.sh` inside the `~/einsteinium` dir for easy compiling 
 
 ```bash
 #!/bin/bash
-berkeleydb () {
-    EMC2_ROOT=$(pwd)
-    EMC2_PREFIX="${EMC2_ROOT}/db4"
-    mkdir -p $EMC2_PREFIX
-    wget -N 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
-    echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
-    tar -xzvf db-4.8.30.NC.tar.gz
-    cat <<-EOL >atomic-builtin-test.cpp
-        #include <stdint.h>
-        #include "atomic.h"
+# LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
+make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
 
-        int main() {
-        db_atomic_t *p; atomic_value_t oldval; atomic_value_t newval;
-        __atomic_compare_exchange(p, oldval, newval);
-        return 0;
-        }
-EOL
-    if g++ atomic-builtin-test.cpp -I./db-4.8.30.NC/dbinc -DHAVE_ATOMIC_SUPPORT -DHAVE_ATOMIC_X86_GCC_ASSEMBLY -o atomic-builtin-test 2>/dev/null; then
-        echo "No changes to bdb source are needed ..."
-        rm atomic-builtin-test 2>/dev/null
-    else
-        echo "Updating atomic.h file ..."
-        sed -i 's/__atomic_compare_exchange/__atomic_compare_exchange_db/g' db-4.8.30.NC/dbinc/atomic.h
-    fi
-    cd db-4.8.30.NC/build_unix/
-    ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$EMC2_PREFIX
-    make install
-    cd $EMC2_ROOT
-}
+./autogen.sh
 
-buildEMC2 () {
-    git pull
-    make clean
-    ./autogen.sh
-    ./configure LDFLAGS="-L${EMC2_PREFIX}/lib/" CPPFLAGS="-I${EMC2_PREFIX}/include/" --with-gui=no --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --enable-static --disable-shared
-    make -j$(nproc)
-}
+CXXFLAGS="-g0 -O2" \
+CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
 
-cd ~/einsteinium
-berkeleydb
-buildEMC2
+make V=1 -j$(nproc --all)
 
 sudo ln -sf /home/$USER/einsteinium/src/einsteinium-cli /usr/local/bin/einsteinium-cli
 sudo ln -sf /home/$USER/einsteinium/src/einsteiniumd /usr/local/bin/einsteiniumd
@@ -817,45 +694,16 @@ Open the `build.sh` script inside the `~/mil` dir and replace the contents below
 
 ```bash
 #!/bin/bash
-# MIL build script for Ubuntu & Debian 9 v.3 (c) Decker (and webworker)
-berkeleydb () {
-    MIL_ROOT=$(pwd)
-    MIL_PREFIX="${MIL_ROOT}/db4"
-    mkdir -p $MIL_PREFIX
-    wget -N 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
-    echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
-    tar -xzvf db-4.8.30.NC.tar.gz
-    cat <<-EOL >atomic-builtin-test.cpp
-        #include <stdint.h>
-        #include "atomic.h"
+# LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
+make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
 
-        int main() {
-        db_atomic_t *p; atomic_value_t oldval; atomic_value_t newval;
-        __atomic_compare_exchange(p, oldval, newval);
-        return 0;
-        }
-EOL
-    if g++ atomic-builtin-test.cpp -I./db-4.8.30.NC/dbinc -DHAVE_ATOMIC_SUPPORT -DHAVE_ATOMIC_X86_GCC_ASSEMBLY -o atomic-builtin-test 2>/dev/null; then
-        echo "No changes to bdb source are needed ..."
-        rm atomic-builtin-test 2>/dev/null
-    else
-        echo "Updating atomic.h file ..."
-        sed -i 's/__atomic_compare_exchange/__atomic_compare_exchange_db/g' db-4.8.30.NC/dbinc/atomic.h
-    fi
-    cd db-4.8.30.NC/build_unix/
-    ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$MIL_PREFIX
-    make install
-    cd $MIL_ROOT
-}
-buildMIL () {
-    git pull
-    ./autogen.sh
-    ./configure LDFLAGS="-L${MIL_PREFIX}/lib/" CPPFLAGS="-I${MIL_PREFIX}/include/" --with-gui=no --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --enable-static --disable-shared --with-incompatible-bdb
-    make -j$(nproc)
-}
-berkeleydb
-buildMIL
-echo "Done building MIL!"
+./autogen.sh
+
+CXXFLAGS="-g0 -O2" \
+CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
+
+make V=1 -j$(nproc --all)
+
 sudo ln -sf /home/$USER/mil/src/mil-cli /usr/local/bin/mil-cli
 sudo ln -sf /home/$USER/mil/src/mild /usr/local/bin/mild
 ```
@@ -913,45 +761,15 @@ git checkout 4e79e1b
 
 ```bash
 #!/bin/bash
-# SFUSD build script for Ubuntu & Debian 9 v.3 (c) Decker (and webworker)
-berkeleydb () {
-    SFUSD_ROOT=$(pwd)
-    SFUSD_PREFIX="${SFUSD_ROOT}/db4"
-    mkdir -p $SFUSD_PREFIX
-    wget -N 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
-    echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
-    tar -xzvf db-4.8.30.NC.tar.gz
-    cat <<-EOL >atomic-builtin-test.cpp
-        #include <stdint.h>
-        #include "atomic.h"
+# LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
+make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
 
-        int main() {
-        db_atomic_t *p; atomic_value_t oldval; atomic_value_t newval;
-        __atomic_compare_exchange(p, oldval, newval);
-        return 0;
-        }
-EOL
-    if g++ atomic-builtin-test.cpp -I./db-4.8.30.NC/dbinc -DHAVE_ATOMIC_SUPPORT -DHAVE_ATOMIC_X86_GCC_ASSEMBLY -o atomic-builtin-test 2>/dev/null; then
-        echo "No changes to bdb source are needed ..."
-        rm atomic-builtin-test 2>/dev/null
-    else
-        echo "Updating atomic.h file ..."
-        sed -i 's/__atomic_compare_exchange/__atomic_compare_exchange_db/g' db-4.8.30.NC/dbinc/atomic.h
-    fi
-    cd db-4.8.30.NC/build_unix/
-    ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$SFUSD_PREFIX
-    make install
-    cd $SFUSD_ROOT
-}
-buildSFUSD () {
-    git pull
-    ./autogen.sh
-    ./configure LDFLAGS="-L${SFUSD_PREFIX}/lib/" CPPFLAGS="-I${SFUSD_PREFIX}/include/" --with-gui=no --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --enable-static --disable-shared --with-incompatible-bdb
-    make -j$(nproc)
-}
-berkeleydb
-buildSFUSD
-echo "Done building SFUSD!"
+./autogen.sh
+
+CXXFLAGS="-g0 -O2" \
+CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
+
+make V=1 -j$(nproc --all)
 sudo ln -sf /home/$USER/sfusd-core/src/smartusd-cli /usr/local/bin/smartusd-cli
 sudo ln -sf /home/$USER/sfusd-core/src/smartusdd /usr/local/bin/smartusdd
 ```

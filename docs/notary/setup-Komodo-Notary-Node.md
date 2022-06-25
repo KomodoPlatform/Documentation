@@ -613,9 +613,9 @@ By default the number of open files per user in Ubuntu is 1024. In our case this
 This is done with the `ulimit` command:
 
 ```bash
-$ulimit -a   # see all the kernel parameters
-$ulimit -n   # see the number of open files
-$ulimit -n 1000000  #  set the number open files to 1000000
+ulimit -a   # see all the kernel parameters
+ulimit -n   # see the number of open files
+ulimit -n 1000000  #  set the number open files to 1000000
 ```
 
 The problem with this way is that the `ulimit` parameter is only set currently for this command terminal and user. This means that after a reboot you’ll need to set the parameter again. Do the following to set it permanent:

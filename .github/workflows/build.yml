@@ -5,16 +5,16 @@ on:
       - master
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: "0"
           persist-credentials: false
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ github.repository_owner }}/AtomicDEX-docs
           path: AtomicDEX-docs

@@ -374,7 +374,20 @@ let atomicDEXsidebar = {
             ],
           ],
         },
-        ["/basic-docs/atomicdex-api-20/message_signing.md", "Message Signing"],
+        {
+          title: "Message Signing",
+          collapsable: true,
+          children: [
+            [
+            "/basic-docs/atomicdex-api-20/message_signing.md#message-signing",
+            "sign_message",
+            ],
+            [
+            "/basic-docs/atomicdex-api-20/message_signing.md#message-verification",
+            "verify_message",
+            ]
+          ]
+        },
         {
           title: "Orders",
           collapsable: true,
@@ -476,14 +489,21 @@ let atomicDEXsidebar = {
           title: "Utility",
           collapsable: true,
           children: [
-            [
-              "/basic-docs/atomicdex-api-20-dev/get_current_mtp.md",
-              "get_current_mtp",
-            ],
-          ],
+            ["/basic-docs/atomicdex-api-20-dev/get_current_mtp.md", "get_current_mtp"]
+          ]
         },
-      ],
-    },
-  ],
+        ["/basic-docs/atomicdex-api-20-dev/max_maker_vol.md", "max_maker_vol"],
+        ["/basic-docs/atomicdex-api-20-dev/get_locked_amount.md", "get_locked_amount"],
+        [
+          "/basic-docs/atomicdex-api-20-dev/withdraw_tasks.md",
+          "Withdraw Tasks",
+        ],
+        [
+          "/basic-docs/atomicdex-api-20-dev/zhtlc_coins.md",
+          "ZHTLC Coins",
+        ],
+      ]
+    }
+  ]
 };
 module.exports = atomicDEXsidebar;

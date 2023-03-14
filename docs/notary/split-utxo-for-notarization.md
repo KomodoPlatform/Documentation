@@ -2,7 +2,7 @@
 
 To participate in a notarisation round, you need to ensure you have enough UTXOs of the correct size available in your wallet. The best way to do this is via a split script in crontab.
 Most coins use UTXOs of `0.0001` value (10000 satoshis), but some third party projects like AYA, MIL & EMC2 require `0.001` value UTXOs (100000 satoshis).
-To find out the correct size UTXO for each coin, check https://github.com/KomodoPlatform/dPoW/blob/master/iguana/dpow/dpow_rpc.c#L20
+To find out the correct size UTXO for each coin, check [https://github.com/KomodoPlatform/dPoW/blob/master/iguana/dpow/dpow_rpc.c#L20](https://github.com/KomodoPlatform/dPoW/blob/master/iguana/dpow/dpow_rpc.c#L20)
 
 
 ## Splitting with Iguana
@@ -61,5 +61,5 @@ Directly mined UTXO will NOT work, you need to either send yourself the mined fu
 
 ## WebWorker's split tool
 
-Alternatively you can use this script, which buids a raw transaction to perform the split - https://github.com/webworker01/nntools/blob/master/splitfunds
+Alternatively you can use this script, which buids a raw transaction to perform the split - [https://github.com/webworker01/nntools/blob/master/splitfunds](https://github.com/webworker01/nntools/blob/master/splitfunds)
 

@@ -95,8 +95,8 @@ Uncompressed Address: Aejy4GTv1fXwyhfJDNdDgmHzkbHBwVxnvD
 ## Private Key Conversion in Python
 
 The python script below will return converted Private Keys for all coins with a known `wiftype` prefix (or a specific coin if set via runtime param).
-If the coin you need to convert is not yet available, you need to find the relevant values in the project's source code, e.g. https://github.com/KomodoPlatform/komodo/blob/810d308d0792a560f05937b7989b6868381c1dc8/src/chainparams.cpp#L197-L199
-Then PR these values to https://github.com/KomodoPlatform/coins/blob/master/coins
+If the coin you need to convert is not yet available, you need to find the relevant values in the project's source code, e.g. [https://github.com/KomodoPlatform/komodo/blob/810d308d0792a560f05937b7989b6868381c1dc8/src/chainparams.cpp#L197-L199](https://github.com/KomodoPlatform/komodo/blob/810d308d0792a560f05937b7989b6868381c1dc8/src/chainparams.cpp#L197-L199)
+Then PR these values to [https://github.com/KomodoPlatform/coins/blob/master/coins](https://github.com/KomodoPlatform/coins/blob/master/coins)
 
 
 ### Install Dependencies

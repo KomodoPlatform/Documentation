@@ -1,38 +1,38 @@
 # Useful commands for Komodo Notary Node
 
-Store `komodo-cli` into `/usr/bin`, so you can use it anywhere you are in the CLI
-
+Create symbolic links for komodod and komodo-cli so you can use them anywhere in CLI.
 ```bash
-sudo cp ~/komodo/src/komodo-cli /usr/bin
+sudo ln -sf /home/$USER/komodo/src/komodo-cli /usr/local/bin/komodo-cli
+sudo ln -sf /home/$USER/komodo/src/komodod /usr/local/bin/komodod
 ```
 
-Stop Komodo, Bitcoin and Iguana at once
+Stop Komodo, Litecoin and Iguana at once
 
 ```bash
-komodo-cli stop && bitcoin-cli stop && pkill -15 iguana
+komodo-cli stop && litecoin-cli stop && pkill -15 iguana
 ```
 
 Update Komodo (be sure to stop Komodo first, see above)
 
 ```bash
-cd ~/komodo && git pull && cd src && make
+cd ~/komodo && git pull && cd src && zcutil/build.sh -j8
 ```
 
 Search for a specific pubkey in files (like: notaries.c, ratify(A,B,C)\_7776 etc. etc.)
 
 ```bash
 **notaries.c**
-cd ~/SuperNET/iguana
+cd ~/dPoW/iguana
 cat notaries.c | grep 0209d48554768dd8dada988b98aca23405057ac4b5b46838a9378b95c3e79b9b9e (or any pubkey of course)
 
 **ratify(A,B,C)_7776**
-cd ~/SuperNET/iguana/tests
+cd ~/dPoW/iguana/tests
 cat ratifyA_7776 | grep 0209d48554768dd8dada988b98aca23405057ac4b5b46838a9378b95c3e79b9b9e (or any pubkey of course)
 ```
 
-If you want to copy your full bitcoin blocks to a new node instead of downloading it again you can scp the files to the new node. THIS WILL TAKE A WHILE!
+If you want to copy your full komodo blocks to a new node instead of downloading it again you can scp the files to the new node. THIS WILL TAKE A WHILE!
 
 ```bash
-cd ~/.bitcoin
-scp -r blocks/ chainstate/ user@ipofnewnode:~/.bitcoin
+cd ~/.komodo
+scp -r blocks/ chainstate/ user@ip_of_new_node:~/.komodo
 ```

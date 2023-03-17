@@ -1,7 +1,7 @@
 # Setup Komodo Notary Node
 
 ::: tip Disclaimer
-This guide is here to give guidance and a general understanding on building a Komodo Notary Node server. It describes how to build the two required notary node servers: **Mainnet** and **Third Party(3P)**. It is possible that some instructions could be deprecated by the time you read it, please refer to [https://github.com/KomodoPlatform/dPoW/blob/master/doc](https://github.com/KomodoPlatform/dPoW/blob/master/doc) for more recent updates
+This guide is here to give guidance and a general understanding on building a Komodo Notary Node server. It describes how to build the two required notary node servers: **Mainnet** and **Third Party(3P)**. It is possible that some instructions could be deprecated by the time you read it, please refer to [https://github.com/KomodoPlatform/dPoW/blob/master/doc](https://github.com/KomodoPlatform/dPoW/blob/master/doc) for more recent updates.
 :::
 
 Note that, whenever the "Main Server" is referenced, it is referring to the server that is used to notarize Komodo and Smart Chains to Litecoin. Whenever "3rd Party server" is referenced, it is referring to the server that is used to notarize any 3rd party coin to Komodo.
@@ -10,21 +10,22 @@ Note that, whenever the "Main Server" is referenced, it is referring to the serv
 Check out [Webworker01's nnTools](https://github.com/webworker01/nntools#setup) for a simple hands off setup for your notary nodes.
 :::
 
-This guide will explain how to setup your Main Server, then go through the process of setting up the 3rd Party Server separately. After that there are instructions on how to create your Notary Node `pubkeys`, import them to your servers and then, create a basic start script for each server. Having a second server is now a requirement for Komodo Notary Nodes.
+This guide will explain how to setup your Main Server, then go through the process of setting up the 3rd Party Server separately. After that there are instructions on how to create your Notary Node `pubkeys`, import them to your servers and then, create a basic start script for each server.
 
-If you face problems, please join the `#notarynode` channel on the [Komodo Discord Server](https://komodoplatform.com/discord)
+If you face problems, please join the `#notarynode` channel on the [Komodo Discord Server](https://komodoplatform.com/discord) for help.
+
 
 ## NN Repo Quick Reference
 
 ::: tip Note
 
-We recommend the Notary Node Operators to check the Table at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) for latest information on the repositories and branches to run. If there is contradicting information in this document, treat the information at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) as correct and inform the team through the [Komodo Discord Server](https://komodoplatform.com/discord) or by submitting a Pull Request (PR). Using the **exact** repository and branch/tag recommended is very important for the security of the network.
+We recommend the Notary Node Operators to check the Table at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) for latest information on the repositories and branches/commits to use for installing chains. If there is contradicting information in this document, treat the information at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) as correct and inform the team through the [Komodo Discord Server](https://komodoplatform.com/discord) or by submitting a Pull Request (PR). Using the **exact** repository and branch/tag recommended is very important for the security of the network.
 
 :::
 
 ### Both Servers
 
-- **KMD:** [https://github.com/KomodoPlatform/komodo/tree/d456be35acd1f8584e1e4f971aea27bd0644d5c5](https://github.com/KomodoPlatform/komodo/tree/d456be35acd1f8584e1e4f971aea27bd0644d5c5) Tree: `d456be35acd1f8584e1e4f971aea27bd0644d5c5`
+- **KMD:** [https://github.com/KomodoPlatform/komodo/](https://github.com/KomodoPlatform/komodo/tree/d456be35acd1f8584e1e4f971aea27bd0644d5c5) Branch: `master`
 - **Iguana (no autosplit):** [https://github.com/KomodoPlatform/dPoW](https://github.com/KomodoPlatform/dPoW) Branch: `master`
 
 ### Main Server
@@ -34,19 +35,18 @@ We recommend the Notary Node Operators to check the Table at [https://github.com
 _To notarise KMD -> LTC, the `-notary=".litecoin/litecoin.conf"` flag is required when launching KMD._
 
 ::: tip Note
-You should have at least 64GB RAM and 32 GB [swap space](https://www.digitalocean.com/community/tutorial_collections/how-to-add-swap-space) on your main server to avoid daemons crashing due to OOM.
+You should have at least 64GB RAM and 32 GB [swap space](https://www.digitalocean.com/community/tutorial_collections/how-to-add-swap-space) on your main server to avoid daemons crashing due to OOM errors.
 :::
 
-### 3rd Party Server (some of these are yet to update - check discord for status - operators can still build and sync the chains to present using the current versions before the actual update needed for S6 is available)
+### 3rd Party Server (some of these are yet to update - check discord for status - operators can still build and sync the chains to present using the current versions before the actual update needed for S7 is available)
 
 - **AYA:** [https://github.com/KomodoPlatform/AYAv2](https://github.com/KomodoPlatform/AYAv2) Tree: `94e6bc000c77401ac1b36f27a43d391984e81ac3`
 - **CHIPS:** [https://github.com/chips-blockchain/chips.git](https://github.com/chips-blockchain/chips.git) Tree: `6e7560a69975d4419b3e36c817cdba6401bc8aed`
 - **EMC2:** [https://github.com/emc2foundation/einsteinium.git](https://github.com/emc2foundation/einsteinium.git) Tree: `c329ae64397bea743054d06b779bb4cbfdcdd25f`
 - **MCL:** [https://github.com/marmarachain/marmara.git](https://github.com/marmarachain/marmara.git) Tree: `a92d8344d3c545b2641a1e04479c90d19588abe7`
 - **MIL:** [https://github.com/emc2foundation/mil.git](https://github.com/emc2foundation/mil.git) Tree: `578bed7f403c4d4a16561317d356202ca60c605f`
-- **SFUSD:** [https://github.com/pbcllc/sfusd-core.git](https://github.com/pbcllc/sfusd-core.git) Tree: `4e79e1bbf9faa5305ed1091e863ef081c9272a8e`
 - **TOKEL:** [https://github.com/TokelPlatform/tokel.git](https://github.com/TokelPlatform/tokel.git) Tree: `65d50d07fb5a3bf9cfa57033f1a1c25f4b37511e`
-- **VRSC:** [https://github.com/VerusCoin/VerusCoin.git](https://github.com/VerusCoin/VerusCoin.git) Tag: `master`  (S6 updates not yet merged!)
+- **VRSC:** [https://github.com/VerusCoin/VerusCoin.git](https://github.com/VerusCoin/VerusCoin.git) Tag: `master`  (S7 updates not yet merged!)
 
 ## Requirements
 
@@ -61,7 +61,7 @@ Komodo Notary Node currently only works on Linux. To setup Komodo Notary Node be
 - RAM: 64 GB or more
 - Disk: 1 TB SSD or greater
 - Bandwidth: 100 Mbps or higher
-- Location: The region where you were elected (refer to Komodo region documentation, but you should already know based on elections)
+- Location: Within the region where you were elected (refer to Komodo region documentation, but you should already know based on elections)
 
 #### 3rd Party Server
 
@@ -107,8 +107,6 @@ sudo apt-get install build-essential pkg-config bsdmainutils libtool libsodium-d
 sudo apt-get install libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev python3-zmq zlib1g-dev wget curl bsdmainutils automake cmake clang libsodium-dev libcurl4-gnutls-dev libssl-dev git unzip python jq htop -y
 ```
 
-Note: If using Ubuntu-18.4, install `python-zmq` instead of `python3-zmq`
-
 ### Install `nanomsg`
 
 Required by iguana
@@ -125,13 +123,13 @@ sudo ldconfig
 
 ## Install Komodo by compiling it from source
 
-### Clone the source, checkout `d456be35acd1f8584e1e4f971aea27bd0644d5c5` tree and compile
+### Clone the source, checkout `master` branch and compile
 
 ```bash
 cd ~
 git clone https://github.com/KomodoPlatform/komodo
 cd komodo
-git checkout d456be35acd1f8584e1e4f971aea27bd0644d5c5
+git checkout master
 ./zcutil/fetch-params.sh
 ./zcutil/build.sh -j$(nproc)
 ```
@@ -195,7 +193,7 @@ chmod 600 ~/.komodo/komodo.conf
 
 The mainnet notary node operators have to provide 2 seperate pubkeys, one for your Main Server and one for your 3rd Party Server. This means you will have to generate 2 seed phrases (i.e passphrases) individually which will generate the 2 pubkeys, set of addresses and private keys (WIF). You will need to create your Main pubkey on your Main Server & follow the same actions on your 3rd Party Server for your 3rd Party pubkey. These pubkeys need to be PR'd into your proposal on [https://github.com/KomodoPlatform/NotaryNodes](https://github.com/KomodoPlatform/NotaryNodes) soon after an election.
 
-**DO NOT IMPORT YOUR MAIN PUBKEY INTO ANY 3RD PARTY DAEMON. For security, you should never enter your seed phrase or privatekey in any other node than your specific notary node server. If you ever expose a private key for any particular coin, it can be converted to all other coins easily.**
+**DO NOT IMPORT YOUR MAIN PUBKEY INTO ANY 3RD PARTY DAEMON. For security, you should never enter your seed phrase or private key in any other node than your specific notary node server. If you ever expose a private key for any particular coin, it can be converted to all other coins easily.**
 
 ### Generating a pubkey
 
@@ -229,7 +227,7 @@ We will import these keys into our coin daemons and validate them later in this 
 
 On both servers:
 
-### Clone the repository and build
+### Clone the dPoW repository and build
 
 ```bash
 cd ~
@@ -527,11 +525,6 @@ git checkout 6e7560a
 
 #### Step 2: Build
 
-##### Ubuntu 18.04
-
-```bash
-./build.sh
-```
 
 ##### Debian 10/11 and Ubuntu 20.04
 
@@ -744,81 +737,6 @@ Restrict access to the `mil.conf` file
 chmod 600 ~/.mil/mil.conf
 ```
 
-### SFUSD
-
-#### Step 1: Clone sfusd-core source
-
-```bash
-cd ~
-git clone https://github.com/pbcllc/sfusd-core
-cd ~/sfusd-core
-git checkout 4e79e1b
-```
-
-#### Build
-
-- Create a file named `build.sh` in the `~/sfusd-core` directory and copy the contents of the following code block into it
-
-```bash
-#!/bin/bash
-# LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
-make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
-
-./autogen.sh
-
-CXXFLAGS="-g0 -O2" \
-CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
-
-make V=1 -j$(nproc --all)
-sudo ln -sf /home/$USER/sfusd-core/src/smartusd-cli /usr/local/bin/smartusd-cli
-sudo ln -sf /home/$USER/sfusd-core/src/smartusdd /usr/local/bin/smartusdd
-```
-
-#### Step 3: Make the script executable and run it
-
-```bash
-chmod +x build.sh
-./build.sh
-```
-
-- Supply your `sudo` password when asked, so that the daemon and cli can be symlinked to your `/usr/local/bin` directory
-
-#### Step 4: Create SFUSD data dir, smartusd.conf file and restrict access to it
-
-```bash
-cd ~
-mkdir .smartusd
-nano ~/.smartusd/smartusd.conf
-```
-
-Insert the following contents inside the smartusd.conf file and save it. (change the rpcuser and rpcpassword values)
-
-```bash
-server=1
-daemon=1
-txindex=1
-rpcuser=user
-rpcpassword=password
-bind=127.0.0.1
-rpcbind=127.0.0.1
-rpcallowip=127.0.0.1
-addnode=na_3p.smk.dog
-addnode=dev_3p.smk.dog
-```
-
-Restrict access to the smartusd.conf file
-
-```bash
-chmod 600 ~/.smartusd/smartusd.conf
-```
-
-::: tip Note
-
-SFUSD's address and wif format are the same as KMD. You can import your 3p KMD node's wif into the SFUSD daemon directly.
-
-SFUSD's rpc calls are similar to BTC's after version `v0.16`. So instead of `getinfo`, use other rpc like `getblockchaininfo`, `getnetworkinfo`, `getwalletinfo`, `getmininginfo` for the appropriate fields.
-
-:::
 
 ### Tokel (TKL)
 
@@ -838,7 +756,6 @@ sudo ln -sf /home/$USER/tokel/src/tokeld /usr/local/bin/tokeld
 sudo ln -sf /home/$USER/tokel/src/tokel-cli /usr/local/bin/tokel-cli
 ```
 
-
 ### VerusCoin (VRSC)
 
 #### Step 1: Clone VRSC source and compile
@@ -847,7 +764,7 @@ sudo ln -sf /home/$USER/tokel/src/tokel-cli /usr/local/bin/tokel-cli
 cd ~
 git clone https://github.com/VerusCoin/VerusCoin -b master
 cd VerusCoin
-# git checkout (TBA: final commit in review)
+git checkout master
 ./zcutil/build.sh -j$(nproc)
 ```
 
@@ -872,7 +789,6 @@ chipsd &
 einsteiniumd &
 ~/marmara/src/komodod -ac_name=MCL -ac_supply=2000000 -ac_cc=2 -addnode=5.189.149.242 -addnode=161.97.146.150 -addnode=149.202.158.145 -addressindex=1 -spentindex=1 -ac_marmara=1 -ac_staked=75 -ac_reward=3000000000 &
 mild &
-smartusdd &
 tokeld &
 verusd &
 ```
@@ -894,8 +810,6 @@ tail -f ~/.einsteinium/debug.log
 tail -f ~/.komodo/MCL/debug.log
 # MIL
 tail -f ~/.mil/debug.log
-# SFUSD
-tail -f ~/.smartusd/debug.log
 # TOKEL
 tail -f ~/.komodo/TOKEL/debug.log
 # VRSC
@@ -917,7 +831,6 @@ chips-cli importprivkey UtrRXqvRFUAtCrCTRAHPH6yroQKUrrTJRmxt2h5U4QTUN1jCxTAh
 einsteinium-cli importprivkey T7trfubd9dBEWe3EnFYfj1r1pBueqqCaUUVKKEvLAfQvz3JFsNhs
 komodo-cli -ac_name=MCL importprivkey UtrRXqvRFUAtCrCTRAHPH6yroQKUrrTJRmxt2h5U4QTUN1jCxTAh
 mil-cli importprivkey cSXsCzbmiZUyMCZyPqjYMhLxBxcFBP6tQSLrCpTpfYkvjJEMthcW
-smartusd-cli importprivkey UtrRXqvRFUAtCrCTRAHPH6yroQKUrrTJRmxt2h5U4QTUN1jCxTAh
 tokel-cli importprivkey UtrRXqvRFUAtCrCTRAHPH6yroQKUrrTJRmxt2h5U4QTUN1jCxTAh
 verus importprivkey UtrRXqvRFUAtCrCTRAHPH6yroQKUrrTJRmxt2h5U4QTUN1jCxTAh
 ```
@@ -954,7 +867,6 @@ einsteinium-cli stop
 komodo-cli -ac_name=MCL stop
 mil-cli stop
 tokel-cli stop
-smartusd-cli stop
 verus stop
 ```
 
@@ -1040,7 +952,6 @@ chipsd -pubkey=$pubkey &
 einsteiniumd -pubkey=$pubkey &
 mild -pubkey=$pubkey &
 ~/marmara/src/komodod -ac_name=MCL -pubkey=$pubkey -ac_supply=2000000 -ac_cc=2 -addnode=5.189.149.242 -addnode=161.97.146.150 -addnode=149.202.158.145 -addressindex=1 -spentindex=1 -ac_marmara=1 -ac_staked=75 -ac_reward=3000000000 &
-smartusdd -pubkey=$pubkey &
 ~/tokel/src/tokeld -pubkey=$pubkey &
 ~/komodo/src/komodod -notary -pubkey=$pubkey &
 ~/VerusCoin/src/verusd -pubkey=$pubkey &

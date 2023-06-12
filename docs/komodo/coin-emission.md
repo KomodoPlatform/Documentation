@@ -3,7 +3,7 @@
 New KMD coins are created in two ways:
 
 1. Mining (Normal mining - `25%` and notary mining - `75%`)
-2. [Rewards](../whitepaper/chapter8.html#rewards) (~ `5.1%` reward to active users that have atleast `10 KMD`)
+2. [Rewards](../whitepaper/chapter8.html#rewards) (~ `5.1%` reward to active users that have atleast `10 KMD` till KMD blockheight `3484958`, `0.01%` after)
 
 :::tip Note
 
@@ -33,7 +33,7 @@ Out of the above mining rewards,
 
 :::
 
-## Rewards
+## Rewards till KMD blockheight 3484958 
 
 [Rewards](../whitepaper/chapter8.html#rewards), more accurately called the "Active User Rewards", are a unique feature to Komodo, made possible by our consensus mechanism [Delayed Proof of Work (dPoW)](../whitepaper/chapter3.html). The important point to note is that, as KMD chain is secured by dPoW (thereby recycling BTC chain's hash power), there is no need to attract huge quantities of its own hash power for security. This is the rationale behind having a `75%` notary mining even in the comparitively smaller amount of the mining induced inflation.
 
@@ -41,7 +41,7 @@ Out of the above mining rewards,
 
 - Any utxo on the KMD chain whose age is greater than `1 hour` and value greater than `10 KMD` is eligible to send a transaction whose output is greater than its input.
 - The amount that can be claimed keeps increasing as the age of the utxo increases and caps at the age of 1 month. If the utxo hasn't claimed the rewards or done another transaction in a month, the rewards are capped.
-- The monthly reward comes out to be approximately: ~ `0.42%`. Please see this [npm module](https://github.com/atomiclabs/get-komodo-rewards/blob/master/index.js) or the [source code](https://github.com/jl777/komodo/blob/jl777/src/komodo_interest.h) to learn about the exact way the rewards are calculated.
+- The monthly reward comes out to be approximately: ~ `0.42%`. Please see this [npm module](https://github.com/atomiclabs/get-komodo-rewards/blob/master/index.js) or the [source code](https://github.com/KomodoPlatform/komodo/blob/master/src/komodo_interest.cpp) to learn about the exact way the rewards are calculated.
 - The above rule and the value of extra satoshis that can be claimed is part of the KMD chain's consensus rules
 - The total value of the rewards that can be claimed by a person claiming atleast once a month compounded is approximately ~ `5.1%` . This [page](https://www.atomicexplorer.com/#/rewards-calc) has a handy rewards calculator.
 - Rewards cannot be claimed by utxos created after the KMD block height: `7777777`
@@ -59,7 +59,7 @@ This is not actually the reality, as many exchanges and cold storage wallets don
 
 ## Summary
 
-In 1 year:
+Till KMD blockheight 3484958  in 1 year:
 
 - KMD created by normal miners : ~ `0.4` million
 - KMD created by notaries : ~ `1.18` million

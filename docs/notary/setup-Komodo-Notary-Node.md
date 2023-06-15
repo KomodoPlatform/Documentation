@@ -74,7 +74,7 @@ CHIPS, all Komodo Smart Chains and Komodo source forks like MCL, TOKEL and VRSC 
 
 If your notary seed or private keys are compromised, it not only places your server and notary funds at risk, but may also compromise the security of the entire dPoW network. **If you ever suspect that your seed or private keys have been compromised, you should immediately contact the Komodo Team so steps can be taken to mitigate any potential threats.**
 
-It is recommended that you write down the randomly generated seed (24 words) in a piece of paper (or use a rugged physical backup like CryptoSteel), then type directly into your server, or generate the seed phrase on the server itself a tool like [https://github.com/smk762/DragonhoundTools/blob/master/wallet/gen_seed.py](https://github.com/smk762/DragonhoundTools/blob/master/wallet/gen_seed.py).
+It is recommended that you write down the randomly generated seed (24 words) in a piece of paper (or use a rugged physical backup like CryptoSteel), then type directly into your server, or generate the seed phrase on the server itself with a tool like [https://github.com/smk762/DragonhoundTools/blob/master/wallet/gen_seed.py](https://github.com/smk762/DragonhoundTools/blob/master/wallet/gen_seed.py).
 
 
 ---

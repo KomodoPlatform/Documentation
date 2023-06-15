@@ -1,16 +1,20 @@
 # Setup Komodo Notary Node
 
 ::: tip Disclaimer
-This guide is here to give guidance and a general understanding on building a Komodo Notary Node server. It describes how to build the two required notary node servers: **Mainnet** and **Third Party(3P)**. It is possible that some instructions could be deprecated by the time you read it, please refer to [https://github.com/KomodoPlatform/dPoW/blob/master/doc](https://github.com/KomodoPlatform/dPoW/blob/master/doc) for more recent updates.
+This guide serves to offer notary operators a reference for building a Komodo Notary Node server. It is possible that some instructions could be deprecated by the time you read it (e.g. coin commit hashes) - please refer to [https://github.com/KomodoPlatform/dPoW/blob/master/doc](https://github.com/KomodoPlatform/dPoW/blob/master/doc) for more recent updates.
 :::
 
-Note that, whenever the "Main Server" is referenced, it is referring to the server that is used to notarize Komodo and Smart Chains to Litecoin. Whenever "3rd Party server" is referenced, it is referring to the server that is used to notarize any 3rd party coin to Komodo.
+Traditionally, Komodo Notary Nodes have been setup using a "Main" and "Third party" server. The "Main" server is used to notarize KMD and Antara smart chains, and the "Third party" server is used to notarize coins from external projects.
+Beginning in season 7, the Komodo Notary Node network will allow running the old "Third party" node on the same server as the "Main" node. Though operators may use alternative methods of virtualisation such as proxmox, this guide will focus on using docker containers to run the "Third party" daemons.
 
-::: tip Note
-Check out [Webworker01's nnTools](https://github.com/webworker01/nntools#setup) for a simple hands off setup for your notary nodes.
-:::
+The steps for setting up your nodes are as follows:
+- Secure your Server
+- Install KMD and LTC Deamons, then launch them, import the private key linked to your "Main" elected pubkey, and let them sync. and let them sync (this may take a couple of days).
+- Launch the other "Main" server chains, import the private key linked to your "Main" elected pubkey, and let them sync.
+- Setup the 3rd Party docker containers, import the private key linked to your "3P" elected pubkey, and let them sync.
+- Install and configure Iguana
 
-This guide will explain how to setup your Main Server, then go through the process of setting up the 3rd Party Server separately. After that there are instructions on how to create your Notary Node `pubkeys`, import them to your servers and then, create a basic start script for each server.
+Some additional tips will be included at the end of the guide to help with node management and maintainence.
 
 If you face problems, please join the `#notarynode` channel on the [Komodo Discord Server](https://komodoplatform.com/discord) for help.
 
@@ -19,133 +23,269 @@ If you face problems, please join the `#notarynode` channel on the [Komodo Disco
 
 ::: tip Note
 
-We recommend the Notary Node Operators to check the Table at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) for latest information on the repositories and branches/commits to use for installing chains. If there is contradicting information in this document, treat the information at [https://github.com/komodoplatform/dpow#dpow-asset-status](https://github.com/komodoplatform/dpow#dpow-asset-status) as correct and inform the team through the [Komodo Discord Server](https://komodoplatform.com/discord) or by submitting a Pull Request (PR). Using the **exact** repository and branch/tag recommended is very important for the security of the network.
+We recommend the Notary Node Operators to check the Table at [https://github.com/KomodoPlatform/dPoW/tree/season-seven#dpow-asset-status](https://github.com/KomodoPlatform/dPoW/tree/season-seven#dpow-asset-status) for latest information on the repositories and branches/commits to use for installing chains. If there is contradicting information in this document, treat the information within the dPoW reopsitory as the point of truth. Using the **exact** repository and branch/tag listed is very important for the security of the network.
 
 :::
 
-### Both Servers
+### Minimum System Requirements
 
-- **KMD:** [https://github.com/KomodoPlatform/komodo/](https://github.com/KomodoPlatform/komodo/tree/d456be35acd1f8584e1e4f971aea27bd0644d5c5) Branch: `master`
-- **Iguana (no autosplit):** [https://github.com/KomodoPlatform/dPoW](https://github.com/KomodoPlatform/dPoW) Branch: `master`
+Notary nodes **must** be run on a dedicated server in a Tier 3 datacenter. Running on a local desktop PC or VPS is not allowed. The minimum system requirements are as follows:
 
-### Main Server
-
-- **LTC:** [https://github.com/litecoin-project/litecoin](https://github.com/litecoin-project/litecoin) Branch: `0.16`
-
-_To notarise KMD -> LTC, the `-notary=".litecoin/litecoin.conf"` flag is required when launching KMD._
-
-::: tip Note
-You should have at least 64GB RAM and 32 GB [swap space](https://www.digitalocean.com/community/tutorial_collections/how-to-add-swap-space) on your main server to avoid daemons crashing due to OOM errors.
-:::
-
-### 3rd Party Server (some of these are yet to update - check discord for status - operators can still build and sync the chains to present using the current versions before the actual update needed for S7 is available)
-
-- **AYA:** [https://github.com/KomodoPlatform/AYAv2](https://github.com/KomodoPlatform/AYAv2) Tree: `94e6bc000c77401ac1b36f27a43d391984e81ac3`
-- **CHIPS:** [https://github.com/chips-blockchain/chips.git](https://github.com/chips-blockchain/chips.git) Tree: `6e7560a69975d4419b3e36c817cdba6401bc8aed`
-- **EMC2:** [https://github.com/emc2foundation/einsteinium.git](https://github.com/emc2foundation/einsteinium.git) Tree: `c329ae64397bea743054d06b779bb4cbfdcdd25f`
-- **MCL:** [https://github.com/marmarachain/marmara.git](https://github.com/marmarachain/marmara.git) Tree: `a92d8344d3c545b2641a1e04479c90d19588abe7`
-- **MIL:** [https://github.com/emc2foundation/mil.git](https://github.com/emc2foundation/mil.git) Tree: `578bed7f403c4d4a16561317d356202ca60c605f`
-- **TOKEL:** [https://github.com/TokelPlatform/tokel.git](https://github.com/TokelPlatform/tokel.git) Tree: `65d50d07fb5a3bf9cfa57033f1a1c25f4b37511e`
-- **VRSC:** [https://github.com/VerusCoin/VerusCoin.git](https://github.com/VerusCoin/VerusCoin.git) Tag: `master`  (S7 updates not yet merged!)
-
-## Requirements
-
-### Hardware
-
-#### Main Server
-
-Komodo Notary Node currently only works on Linux. To setup Komodo Notary Node be sure you have a solid server with the following minimum requirements:
-
-- OS: Debian/Ubuntu LTS x64 - minimal installation with Openssh server (recommended).
-- CPU: A High-Performance CPU (e.g. Xeon, i7/i9, Ryzen, EPYC, etc.)
-- RAM: 64 GB or more
-- Disk: 1 TB SSD or greater
-- Bandwidth: 100 Mbps or higher
-- Location: Within the region where you were elected (refer to Komodo region documentation, but you should already know based on elections)
-
-#### 3rd Party Server
-
-At the moment the current minimum server specs are listed below, however, this may change as more 3rd party coins require notarizing.
-
-- OS: Debian/Ubuntu LTS x64 - minimal installation with Openssh server (recommended).
-- CPU: A High-Performance CPU (e.g. Xeon, i7/i9, Ryzen, EPYC, etc.)
-- RAM: 32 GB or more
-- Disk: 500 GB SSD or greater
-- Bandwidth: 100 Mbps or higher
-- Location: Within the same region as your main server (not required to be in the same datacenter)
+- **OS:** Debian/Ubuntu LTS x64 - minimal installation with Openssh server (recommended). This guide assumes you are using Ubuntu 20.04 LTS.
+- **CPU:** A High-Performance CPU (e.g. Xeon, i7/i9, Ryzen, EPYC, etc.) with 8+ Cores
+- **RAM:** 64GB+ RAM
+- **HDD:** 1TB+ (SSD is recommended)
+- **Bandwidth**: 100 Mbps or higher
+- **Location**: Within the region where you were elected.
 
 
 ### Security
 
-_Before doing anything further, please ensure that your server is secure._
-
-- Update the Operating System: `sudo apt-get update && sudo apt-get upgrade -y`
-
-- Install [Fail2ban](https://linuxize.com/post/install-configure-fail2ban-on-ubuntu-20-04/).
-
-- Perform Initial Setup for [creating new user, give it `sudo` permission](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04), [change SSH port](https://linuxhandbook.com/change-ssh-port/), [disable `root` login](https://www.howtogeek.com/howto/linux/security-tip-disable-root-ssh-login-on-linux/), [disable password authentication for login](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server)
-
-- Please run processes as an unprivileged user and use `sudo` where necessary
-
-**Here is a repo with automated scripts to prepare your fresh Ubuntu server with initial setup [https://github.com/webworker01/freshubuntu](https://github.com/webworker01/freshubuntu)**
-
-## Initial Server Setup
-
-The instructions below are required.
-
-### Install Required Dependencies
-
-Main:
-
-```bash
-sudo apt-get install build-essential pkg-config bsdmainutils libtool libsodium-dev libc6-dev libssl-dev libcurl4-gnutls-dev ncurses-dev zlib1g-dev cmake clang m4 automake autoconf g++-multilib python python3 python3-zmq curl wget jq git unzip libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev -y
-```
-
-3rd Party:
-
-```bash
-sudo apt-get install libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev python3-zmq zlib1g-dev wget curl bsdmainutils automake cmake clang libsodium-dev libcurl4-gnutls-dev libssl-dev git unzip python jq htop -y
-```
-
-### Install `nanomsg`
-
-Required by iguana
-
-```bash
-cd ~
-git clone https://github.com/nanomsg/nanomsg
-cd nanomsg
-cmake . -DNN_TESTS=OFF -DNN_ENABLE_DOC=OFF
-make -j2
-sudo make install
-sudo ldconfig
-```
-
-## Install Komodo by compiling it from source
-
-### Clone the source, checkout `master` branch and compile
-
-```bash
-cd ~
-git clone https://github.com/KomodoPlatform/komodo
-cd komodo
-git checkout master
-./zcutil/fetch-params.sh
-./zcutil/build.sh -j$(nproc)
-```
+**Before doing anything further, please ensure that your server is secure.**
 
 ::: tip Note
-
-`-j$(nproc)` uses all the available processor threads while compiling. If you don't want to use all threads, you may specify the number directly like so: `-j8` will use only 8 threads; Alternatively, you may like to use `-j$(expr $(nproc) - 1)`, which will use all the available processors except one.
-
+In the examples below, I will use the username `dragonhound`. Please replace this with your own username.
+Make sure to use a passowrd manager like [KeePassXC](https://keepassxc.org/) to generate and store your sudo passwords an SSH keys, and backup your password database to a secure location so you dont lose access to your server if your desktop/laptop fails.
 :::
 
-### Symlink the compiled binaries
+- **Update the system**: `sudo apt-get update && sudo apt-get upgrade -y`
+- **[Create a new user & give it `sudo` permissions](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04)**:
+    ```bash
+    adduser dragonhound # to add a new user
+    usermod -aG sudo dragonhound # to give the user sudo permissions
+    su - dragonhound # to switch to the new user
+    ```
+- **Install [Fail2ban](https://linuxize.com/post/install-configure-fail2ban-on-ubuntu-20-04/)** with  `sudo apt install fail2ban`. It will start automatically after installation.
+- **Install [UFW](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-20-04)** (make sure to allow SSH access **before** enabling the firewall).
+    ```bash
+    sudo apt install ufw
+    sudo ufw allow OpenSSH
+    sudo ufw enable
+    ```
+- **[Create an SSH key](https://www.unixtutorial.org/how-to-generate-ed25519-ssh-key/)** on your PC, then add the public SSH key to the server. This will allow you to login without a password. Repeat this step for each device you will use to access the server. For example:
+    - Create an ED25519 SSH key (e.g. on your laptop) with `ssh-keygen -t ed25519 -C "dragonhound@laptop"`
+    - View the public key with `cat ~/.ssh/id_ed25519.pub`.
+    - It will look like `ssh-ed25519 AAAAC3NzaC1lZD42STE5AAAAIK0wmN/Cr3JXqmLW7u+g9pTh+wyqDHpSQEIQczXkVx9q dragonhound@laptop`
+- **Add the SSH key to your server**:
+    - On the server, create a `.ssh` folder in your home directory with `mkdir ~/.ssh`
+    - Create a file to contain authorized keys with `nano ~/.ssh/authorized_keys`
+    - Paste the public key into the file, then save and exit.
+    - To confirm that the key works, open a new terminal on your desktop/laptop and run `ssh dragonhound@<SERVER_IP>`. If everything is working, you should be logged in without being asked for a password.
+- **[Disable password authentication](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-20-04#disabling-password-authentication-on-your-server)**
+    - **Make sure you have added your SSH key to the server and confirmed it is woring before doing this!**
+    - Open the SSH daemon config file with `sudo nano /etc/ssh/sshd_config`
+    - Find the line that says `#PasswordAuthentication yes` and change it to `PasswordAuthentication no` then save and exit the file.
+    - Restart the SSH daemon with `sudo systemctl restart sshd`
+- **[Disable `root` login](https://www.howtogeek.com/howto/linux/security-tip-disable-root-ssh-login-on-linux/)**
+    - Open the SSH daemon config file with `sudo nano /etc/ssh/sshd_config`
+    - Set `PermitRootLogin no` then save and exit the file
+    - Restart the SSH daemon with `sudo systemctl restart sshd`
+- **[Add 32GB of swap space](https://www.digitalocean.com/community/tutorial_collections/how-to-add-swap-space)**
+    - View existing swap space with `sudo swapon --show`, existing physical an virtual memory with `free -h`, and disk space with `df -h`.
+    - Create a 32GB swap file with `sudo fallocate -l 32G /swapfile`
+    - Restrict swap file permissions to root only with `sudo chmod 600 /swapfile`
+    - Mark the file as swap space with `sudo mkswap /swapfile`
+    - Activate the swap file with `sudo swapon /swapfile`
+    - Verify that the swap space is active with `sudo swapon --show` and `free -h`
+    - To make the swap file permanent, we'll edit the `fstab` file.
+        - First, backup the `fstab` file with `sudo cp /etc/fstab /etc/fstab.bak`
+        - Update it with `echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab`
+    - Now your swap space should be retained after rebooting.
+- **[Change the SSH port](https://linuxhandbook.com/change-ssh-port/)** (optional, but recommended)
+    - Open the ssh daemon config file with `sudo nano /etc/ssh/sshd_config`
+    - Change the `Port` value to something other than `22` (e.g. `Port 2222`)
+    - Save and exit the file, then restart the SSH service with `sudo systemctl restart sshd`
+    - Test the new port with `ssh dragonhound@<SERVER_IP> -p 2222`
 
-```bash
-sudo ln -sf /home/$USER/komodo/src/komodo-cli /usr/local/bin/komodo-cli
-sudo ln -sf /home/$USER/komodo/src/komodod /usr/local/bin/komodod
-```
+
+### Install Daemons
+
+The daemons will take a couple of days to sync, so it's best to get them started as soon as possible. If you encounter any errors, please join the `#notarynode` channel on the [Komodo Discord Server](https://komodoplatform.com/discord) for help.
+
+- **Install dependencies:** 
+    ```bash
+    sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python3 python3-zmq zlib1g-dev wget libcurl4-gnutls-dev bsdmainutils automake curl libsodium-dev jq libfmt-dev autotools-dev cmake clang htop libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libssl-dev -y
+    ```
+- **Install KMD:** [https://github.com/KomodoPlatform/komodo/](https://github.com/KomodoPlatform/komodo/tree/d456be35acd1f8584e1e4f971aea27bd0644d5c5) Branch: `master`
+    - Clone repo: `git clone https://github.com/KomodoPlatform/komodo -b master`
+    - Enter repo folder `cd komodo`
+    - Fetch Zcash params: `./zcutil/fetch-params.sh`
+    - Build Komodo: `./zcutil/build.sh -j$(nproc)`
+    - Launch the Komodo daemon `komodod &`
+
+- **Install LTC:** [https://github.com/litecoin-project/litecoin](https://github.com/litecoin-project/litecoin) Branch: `0.16`
+    - Clone repo: ` git clone https://github.com/litecoin-project/litecoin -b 0.16`
+    - Enter repo folder `cd litecoin`
+    - Create `build.sh` script with the following contents and give it executable permission (`chmod +x build.sh`)
+        ```bash
+        #!/bin/bash
+        # LTC build script for Ubuntu & Debian 9 v.3 (c) Decker (and webworker)
+        berkeleydb () {
+            LTC_ROOT=$(pwd)
+            LTC_PREFIX="${LTC_ROOT}/db4"
+            mkdir -p $LTC_PREFIX
+            wget -N 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
+            echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef db-4.8.30.NC.tar.gz' | sha256sum -c
+            tar -xzvf db-4.8.30.NC.tar.gz
+            cat <<-EOL >atomic-builtin-test.cpp
+                #include <stdint.h>
+                #include "atomic.h"
+
+                int main() {
+                db_atomic_t *p; atomic_value_t oldval; atomic_value_t newval;
+                __atomic_compare_exchange(p, oldval, newval);
+                return 0;
+                }
+        EOL
+            if g++ atomic-builtin-test.cpp -I./db-4.8.30.NC/dbinc -DHAVE_ATOMIC_SUPPORT -DHAVE_ATOMIC_X86_GCC_ASSEMBLY -o atomic-builtin-test 2>/dev/null; then
+                echo "No changes to bdb source are needed ..."
+                rm atomic-builtin-test 2>/dev/null
+            else
+                echo "Updating atomic.h file ..."
+                sed -i 's/__atomic_compare_exchange/__atomic_compare_exchange_db/g' db-4.8.30.NC/dbinc/atomic.h
+            fi
+            cd db-4.8.30.NC/build_unix/
+            ../dist/configure -enable-cxx -disable-shared -with-pic -prefix=$LTC_PREFIX
+            make install
+            cd $LTC_ROOT
+        }
+        buildLTC () {
+            git pull
+            ./autogen.sh
+            ./configure LDFLAGS="-L${LTC_PREFIX}/lib/" CPPFLAGS="-I${LTC_PREFIX}/include/" --with-gui=no --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --enable-static --disable-shared --with-incompatible-bdb
+            make -j$(nproc)
+        }
+        berkeleydb
+        buildLTC
+        echo "Done building LTC!"
+        ```
+    - Execute `./build.sh` to compile the Litecoin binaries.
+    - Launch the Litecoin daemon `litecoind &`
+
+    ::: tip Note
+
+    `-j$(nproc)` uses all the available processor threads while compiling. If you don't want to use all threads, you may specify the number directly like so: `-j8` will use only 8 threads. Alternatively, you may like to use `-j$(expr $(nproc) - 1)`, which will use all the available processors except one.
+
+    :::
+
+
+
+- **Launch the daemons:**
+    - Launch the remaining "Main" server daemons, and let them sync. You can find the launch parameters for each smart chain at [https://github.com/KomodoPlatform/coins/blob/master/launch/smartchains.json](https://github.com/KomodoPlatform/coins/blob/master/launch/smartchains.json)
+- **Import your private keys**
+    ```bash
+    # For Komodo
+    komodo-cli importprivkey <KMD_PRIVATE_KEY>
+    # For Litecoin
+    litecoin-cli importprivkey <KMD_PRIVATE_KEY>
+    # For main smart chains (replace <TICKER> with the smart chain ticker)
+    komodo-cli -ac_name=<TICKER> importprivkey <KMD_PRIVATE_KEY>
+    ```
+- **Check the sync status**
+    ```bash
+    # Check the status of the KMD sync process
+    tail -f ~/.komodo/debug.log
+
+    # Check the status of the LTC sync process
+    tail -f ~/.litecoin/debug.log
+
+    # Check the status of the Main smart chain sync process
+    tail -f ~/.komodo/<TICKER>/debug.log
+    ```
+
+The debug.log will have lines like:
+
+`2023-06-15 09:08:05 UpdateTip: new best=0c01379c24db5055444983d447ce5af58a9ed50072b4a08a3fec0b151cf51213  height=3463643  log2_work=53.293613  tx=20987955  date=2023-06-15 09:08:06 progress=1.000000  cache=43.6MiB(143561tx)`
+
+Once you see `progress=1.000000`, the chain is in sync!
+
+
+### Install Iguana
+
+Iguana is the software used to perform notarizations, and needs to be installed from the [dPoW](https://github.com/KomodoPlatform/dPoW) repository.
+
+- **Install nanomsg** (required for Iguana):
+    ```bash
+    cd ~
+    git clone https://github.com/nanomsg/nanomsg
+    cd nanomsg
+    cmake . -DNN_TESTS=OFF -DNN_ENABLE_DOC=OFF
+    make -j2
+    sudo make install
+    sudo ldconfig
+    ```
+
+- **Clone the dPoW repository**:
+    ```bash
+    # Clone repository
+    git clone https://github.com/KomodoPlatform/dPoW -b season-seven
+    cd dPoW/iguana
+
+    # Build Iguana
+    make
+
+    # Add files containing your pubkeys
+    echo "<YOUR_MAIN_PUBKEY>" > pubkey.txt
+    echo "<YOUR_3P_PUBKEY>" > pubkey_3p.txt
+    ```
+
+### Setting Up Third Party coins in Docker
+Follow the instructions in [https://github.com/smk762/notary_docker_3p#notary_docker_3p](https://github.com/smk762/notary_docker_3p#notary_docker_3p) to setup the third party coins in docker.
+
+If you need help, please reach out to the Komodo Discord #notary-node channel.
+
+
+### Create Symbolic Links for deamons and cli's
+- **For the Main coins**:
+    ```bash
+    sudo ln -s ~/komodo/src/komodod /usr/local/bin/komodod
+    sudo ln -s ~/komodo/src/komodo-cli /usr/local/bin/komodo-cli
+    sudo ln -s ~/litecoin/src/litecoind /usr/local/bin/litecoind
+    sudo ln -s ~/litecoin/src/litecoin-cli /usr/local/bin/litecoin-cli
+    ```
+- **For the Third Party coins**, `komodo` and `komodo-cli` will be using a different configuration and data folder, so we'll create a wrapper script to launch the daemon and cli with the correct parameters:
+    
+    Open wrapper script file for the deamon with `nano ~/komodo/src/komodod_3p` and put the following inside:
+    ```bash
+    #!/bin/bash
+    komodod -datadir=/home/${USER}/.komodo_3p -conf=/home/${USER}/.komodo_3p/komodo.conf $@
+    ```
+    Open wrapper script file for the deamon cli with `nano ~/komodo/src/komodo_3p-cli` and put the following inside:
+    ```bash
+    #!/bin/bash
+    komodo-cli -conf=/home/${USER}/.komodo_3p/komodo.conf $@
+    ```
+    Make the wrapper scripts executable:
+    ```bash
+    chmod +x /home/$USER/komodo/src/komodod_3p
+    chmod +x /home/$USER/komodo/src/komodo_3p-cli
+    ```
+    Now we can create the symbolic links:
+    ```bash
+    # For the 3P instance of Komodo
+    sudo ln -s /home/$USER/komodo/src/komodod_3p /usr/local/bin/komodod_3p
+    sudo ln -s /home/$USER/komodo/src/komodo_3p-cli /usr/local/bin/komodo_3p-cli
+
+    # AYA
+    sudo ln -s /home/$USER/AYAv2/src/aryacoind /usr/local/bin/aryacoind
+    sudo ln -s /home/$USER/AYAv2/src/aryacoin-cli /usr/local/bin/aryacoin-cli
+
+    # CHIPS
+    sudo ln -s /home/$USER/chips/src/chipsd /usr/local/bin/chipsd
+    sudo ln -s /home/$USER/chips/src/chips-cli /usr/local/bin/chips-cli
+
+    # EMC2
+    sudo ln -s /home/$USER/einsteinium/src/einsteiniumd /usr/local/bin/einsteiniumd
+    sudo ln -s /home/$USER/einsteinium/src/einsteinium-cli /usr/local/bin/einsteinium-cli
+
+    # MIL
+    sudo ln -s /home/$USER/mil/src/mild /usr/local/bin/mild
+    sudo ln -s /home/$USER/mil/src/einsteinium-cli /usr/local/bin/mil-cli
+
+    # MCL, VRSC and TOKEL all use the komodod deamon, so do not need a symlink
+
+    ```
+
 
 ### Create the data dir, `komodo.conf` file and secure it
 

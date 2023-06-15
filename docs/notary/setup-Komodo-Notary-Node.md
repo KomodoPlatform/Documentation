@@ -280,8 +280,9 @@ Iguana is the software used to perform notarizations, and needs to be installed 
         rpcworkqueue=256
         rpcbind=127.0.0.1
         rpcallowip=127.0.0.1
-        # TODO: Update these IPs to the latest from season 7 notaries
         addnode=15.235.204.174 # Dragonhound_AR
+        addnode=209.222.101.247 # Dragonhound_NA
+        addnode=103.195.100.32 # Dragonhound_DEV
         ```
         Restrict access to the `komodo.conf` file
 
@@ -319,6 +320,9 @@ Iguana is the software used to perform notarizations, and needs to be installed 
         rpcport=9332
         rpcuser=litecoinrpcChangeThisToSomethingSecure
         rpcpassword=passwordChangeThisToSomethingSecure
+        addnode=15.235.204.174 # Dragonhound_AR
+        addnode=209.222.101.247 # Dragonhound_NA
+        addnode=103.195.100.32 # Dragonhound_DEV
         ```
 
     - Restrict access to the `litecoin.conf` file
@@ -514,9 +518,9 @@ find ~/.komodo_3p -type f -iname "*.conf" -exec chmod 600 {} \;
 ```
 
 ---
-## Address whitelisting
+## Address whitelisting (optional, but recommended)
 
-If you are using a whitelist for incoming transactions (recommended to avoid dust attacks!) funding top ups will come from `RDragoNHdwovvsDLSLMiAEzEArAD3kq6FN` for your Main node, and `RHound8PpyhVLfi56dC7MK3ZvvkAmB3bvQ` for your 3P node, so add these addresses to your respective whitelists. This can be done by:
+If you are using a whitelist for incoming transactions (recommended to avoid dust attacks!) funding top ups will come from the dragonhound_DEV nodes using the addresses `RHi882Amab35uXjqBZjVxgEgmkkMu454KK` (Main), and `RLdmqsXEor84FC8wqDAZbkmJLpgf2nUSkq` (3P), so add these addresses to your respective whitelists. This can be done by:
 - Adding `-whitelistaddress=<address>` to your daemon launch strings, or
 - Adding `whitelistaddress=<address>` to your daemon `conf` files
 

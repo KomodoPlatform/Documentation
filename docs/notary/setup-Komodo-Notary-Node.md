@@ -280,6 +280,8 @@ Iguana is the software used to perform notarizations, and needs to be installed 
         rpcworkqueue=256
         rpcbind=127.0.0.1
         rpcallowip=127.0.0.1
+        port=7770
+        rpcport=7771
         addnode=15.235.204.174 # Dragonhound_AR
         addnode=209.222.101.247 # Dragonhound_NA
         addnode=103.195.100.32 # Dragonhound_DEV
@@ -621,12 +623,30 @@ Enable `ufw` and close all routes except `ssh`. Create rules to allow the follow
 
 For example:
 ```bash
+# Main ports
 sudo ufw allow 7770 comment 'KMD Main P2P'
+sudo ufw allow 20848 comment 'CCL Main P2P'
+sudo ufw allow 20931 comment 'CLC Main P2P'
+sudo ufw allow 23225 comment 'GLEEC Main P2P'
+sudo ufw allow 12985 comment 'ILN Main P2P'
+sudo ufw allow 10701 comment 'KOIN Main P2P'
+sudo ufw allow 8426 comment 'NINJA Main P2P'
+sudo ufw allow 45452 comment 'PIRATE Main P2P'
+sudo ufw allow 11340 comment 'SUPERNET Main P2P'
+sudo ufw allow 36789 comment 'THC Main P2P'
+# Third party P2P ports
 sudo ufw allow 8770 comment 'KMD 3P P2P'
-sudo ufw allow 9333 comment 'LTC P2P'
-...
+sudo ufw allow 29404 comment 'TOKEL P2P'
+sudo ufw allow 33824 comment 'MCL P2P'
+sudo ufw allow 27485 comment 'VRSC P2P'
+sudo ufw allow 26001 comment 'AYA P2P'
+sudo ufw allow 57777 comment 'CHIPS P2P'
+sudo ufw allow 41878 comment 'EMC2 P2P'
+sudo ufw allow 41888 comment 'MIL P2P'
+# Iguana P2P ports
 sudo ufw allow 13348 comment 'Iguana Main P2P'
 sudo ufw allow 13345 comment 'Iguana 3P P2P'
+# AtomicDEX P2P ports
 sudo ufw allow 38890 comment 'AtomicDEX P2P'
 sudo ufw allow 38900 comment 'AtomicDEX P2P'
 ```

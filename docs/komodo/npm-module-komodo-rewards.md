@@ -6,7 +6,7 @@ When using this module after the KMD blockheight of `3484958`, please make sure 
 
 :::
 
-This module has been created by [Luke Childs](https://github.com/lukechilds) a developer in the Komodo ecosystem.
+This module has been created by [Luke Childs](https://github.com/lukechilds).
 
 - **Source code**: [https://github.com/atomiclabs/get-komodo-rewards](https://github.com/atomiclabs/get-komodo-rewards)
 - **npm module**: [https://www.npmjs.com/package/get-komodo-rewards](https://www.npmjs.com/package/get-komodo-rewards)

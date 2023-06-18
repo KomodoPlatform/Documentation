@@ -77,6 +77,26 @@ This is not actually the reality, as many exchanges and cold storage wallets don
 - KMD in circulation: ~ `137795227` ~ `137.7` million
 - Approximate amount of rewards claimable (excluding the mined KMD as that too will be eligible to claim rewards) = `137795227 * 0.0001` = `13779` ~ `13.77` thousand
 
+### How Rewards work after KMD blockheight 3484958
+
+- Any utxo on the KMD chain whose age is greater than `1 hour` and value greater than `10 KMD` is eligible to send a transaction whose output is greater than its input.
+- The amount that can be claimed keeps increasing as the age of the utxo increases and caps at the age of 1 month. If the utxo hasn't claimed the rewards or done another transaction in a month, the rewards are capped.
+- The monthly reward comes out to be approximately: ~ `0.00083%`. Please see this [npm module](https://github.com/atomiclabs/get-komodo-rewards/blob/master/index.js) or the [source code](https://github.com/KomodoPlatform/komodo/blob/master/src/komodo_interest.cpp) to learn about the exact way the rewards are calculated.
+- The above rule and the value of extra satoshis that can be claimed is part of the KMD chain's consensus rules
+- The total value of the rewards that can be claimed by a person claiming atleast once a month compounded is approximately ~ `0.01%` . This [page](https://www.atomicexplorer.com/#/rewards-calc) has a handy rewards calculator.
+- Rewards cannot be claimed by utxos created after the KMD block height: `7777777`
+
+#### Now let us calculate the inflation caused by Rewards
+
+Assume that, all the KMD currently in circulation is in utxos whose size is greater than `10` and all the users will claim at least once a month for the next 1 year = 12 months.
+
+::: warning
+This is not actually the reality, as many exchanges and cold storage wallets don't regularly claim their rewards. These unclaimed rewards are minable.
+:::
+
+- KMD in circulation: ~ `137795227` ~ `137.7` million
+- Approximate amount of rewards claimable (excluding the mined KMD as that too will be eligible to claim rewards) = `112462628 * 0.0001` = `5735594` ~ `5.73` million
+
 ## Summary
 
 Till KMD blockheight 3484958 in 1 year:

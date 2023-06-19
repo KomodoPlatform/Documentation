@@ -256,81 +256,81 @@ Iguana is the software used to perform notarizations, and needs to be installed 
         chmod +x ~/dPoW/iguana/wp_7779
         ```
 ---
-- **Install KMD:** [https://github.com/KomodoPlatform/komodo/](https://github.com/KomodoPlatform/komodo/tree/d456be35acd1f8584e1e4f971aea27bd0644d5c5) Branch: `master`
-    - Clone repo: `git clone https://github.com/KomodoPlatform/komodo -b master`
-    - Enter repo folder `cd komodo`
-    - Fetch Zcash params: `./zcutil/fetch-params.sh`
-    - Build Komodo: `./zcutil/build.sh -j$(nproc)`
-    - Create the data folder and a `komodo.conf` config file
-        ```bash
-        cd ~
-        mkdir .komodo
-        nano ~/.komodo/komodo.conf
-        ```
-        Add the following lines to the `komodo.conf` file and save it (replace rpcuser and rpcpassword)
+## Install KMD
+- Clone repo: `git clone https://github.com/KomodoPlatform/komodo -b master`
+- Enter repo folder `cd komodo`
+- Fetch Zcash params: `./zcutil/fetch-params.sh`
+- Build Komodo: `./zcutil/build.sh -j$(nproc)`
+- Create the data folder and a `komodo.conf` config file
+    ```bash
+    cd ~
+    mkdir .komodo
+    nano ~/.komodo/komodo.conf
+    ```
+    Add the following lines to the `komodo.conf` file and save it (replace rpcuser and rpcpassword)
 
-        ```bash
-        rpcuser=usernameChangeItToSomethingSecure
-        rpcpassword=passwordChangeItToSomethingSecure
-        txindex=1
-        addressindex=1
-        spentindex=1
-        server=1
-        daemon=1
-        rpcworkqueue=256
-        rpcbind=127.0.0.1
-        rpcallowip=127.0.0.1
-        port=7770
-        rpcport=7771
-        addnode=15.235.204.174 # Dragonhound_AR
-        addnode=209.222.101.247 # Dragonhound_NA
-        addnode=103.195.100.32 # Dragonhound_DEV
-        ```
-        Restrict access to the `komodo.conf` file
+    ```bash
+    rpcuser=usernameChangeItToSomethingSecure
+    rpcpassword=passwordChangeItToSomethingSecure
+    txindex=1
+    addressindex=1
+    spentindex=1
+    server=1
+    daemon=1
+    rpcworkqueue=256
+    rpcbind=127.0.0.1
+    rpcallowip=127.0.0.1
+    port=7770
+    rpcport=7771
+    addnode=15.235.204.174 # Dragonhound_AR
+    addnode=209.222.101.247 # Dragonhound_NA
+    addnode=103.195.100.32 # Dragonhound_DEV
+    ```
+    Restrict access to the `komodo.conf` file
 
-        ```bash
-        chmod 600 ~/.komodo/komodo.conf
-        ```
+    ```bash
+    chmod 600 ~/.komodo/komodo.conf
+    ```
 
 ---
-- **Install LTC:** [https://github.com/litecoin-project/litecoin](https://github.com/litecoin-project/litecoin) Branch: `0.16`
-    - Clone repo: ` git clone https://github.com/litecoin-project/litecoin -b 0.16`
-    - Enter repo folder `cd litecoin`
-    - Create `build.sh` script with the following contents and give it executable permissions (`chmod +x build.sh`)
-        ```bash
-        #!/bin/bash
-        # LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
-        make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
+## Install LTC
+- Clone repo: ` git clone https://github.com/litecoin-project/litecoin -b 0.16`
+- Enter repo folder `cd litecoin`
+- Create `build.sh` script with the following contents and give it executable permissions (`chmod +x build.sh`)
+    ```bash
+    #!/bin/bash
+    # LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
+    make -C ${PWD}/depends v=1 NO_PROTON=1 NO_QT=1 HOST=$(depends/config.guess) -j$(nproc --all)
 
-        ./autogen.sh
+    ./autogen.sh
 
-        CXXFLAGS="-g0 -O2" \
-        CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
+    CXXFLAGS="-g0 -O2" \
+    CONFIG_SITE="$PWD/depends/$(depends/config.guess)/share/config.site" ./configure --disable-tests --disable-bench --without-miniupnpc --enable-experimental-asm --with-gui=no --disable-bip70
 
-        make V=1 -j$(nproc --all)
-        ```
-    - Execute `./build.sh` to compile the Litecoin binaries.
-    - Create the data folder and a `komodo.conf` config file
-        ```bash
-        cd ~
-        mkdir .litecoin
-        nano ~/.litecoin/litecoin.conf
-        ```
-    - Insert the following contents inside the `litecoin.conf` file and save it. (change the `rpcuser` and `rpcpassword` values)
-        ```bash
-        txindex=1
-        rpcport=9332
-        rpcuser=litecoinrpcChangeThisToSomethingSecure
-        rpcpassword=passwordChangeThisToSomethingSecure
-        addnode=15.235.204.174 # Dragonhound_AR
-        addnode=209.222.101.247 # Dragonhound_NA
-        addnode=103.195.100.32 # Dragonhound_DEV
-        ```
+    make V=1 -j$(nproc --all)
+    ```
+- Execute `./build.sh` to compile the Litecoin binaries.
+- Create the data folder and a `komodo.conf` config file
+    ```bash
+    cd ~
+    mkdir .litecoin
+    nano ~/.litecoin/litecoin.conf
+    ```
+- Insert the following contents inside the `litecoin.conf` file and save it. (change the `rpcuser` and `rpcpassword` values)
+    ```bash
+    txindex=1
+    rpcport=9332
+    rpcuser=litecoinrpcChangeThisToSomethingSecure
+    rpcpassword=passwordChangeThisToSomethingSecure
+    addnode=15.235.204.174 # Dragonhound_AR
+    addnode=209.222.101.247 # Dragonhound_NA
+    addnode=103.195.100.32 # Dragonhound_DEV
+    ```
 
-    - Restrict access to the `litecoin.conf` file
-        ```bash
-        chmod 600 ~/.litecoin/litecoin.conf
-        ```
+- Restrict access to the `litecoin.conf` file
+    ```bash
+    chmod 600 ~/.litecoin/litecoin.conf
+    ```
 
 ---
 ## Install Third Party coins daemons in Docker
@@ -349,58 +349,83 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
     ```
 - **For the Third Party coins**, `komodo-cli` will be using a different configuration and data folder, so we'll create a wrapper script to launch the daemon and cli with the correct parameters:
 
-Open wrapper script file for the deamon cli with `nano ~/komodo/src/komodo_3p-cli` and put the following inside:
-```bash
-#!/bin/bash
-komodo-cli -conf=/home/${USER}/.komodo_3p/komodo.conf $@
-```
-Make the wrapper script executable:
-```bash
-chmod +x /home/$USER/komodo/src/komodo_3p-cli
-```
-Now we can create a symbolic link for the 3P instance of Komodo:
-```bash
-sudo ln -s /home/$USER/komodo/src/komodo_3p-cli /usr/local/bin/komodo_3p-cli
-```
-After building the 3P docker images, the cli binaries for the other 3P coins will be located in their `conf` folders, so we can create symbolic links for them as well:
-```bash
-# AYA
-sudo ln -s /home/$USER/.aryacoin/aryacoin-cli /usr/local/bin/aryacoin-cli
+    Open wrapper script file for the deamon cli with `nano ~/komodo/src/komodo_3p-cli` and put the following inside:
+    ```bash
+    #!/bin/bash
+    komodo-cli -conf=/home/${USER}/.komodo_3p/komodo.conf $@
+    ```
+    Make the wrapper script executable:
+    ```bash
+    chmod +x /home/$USER/komodo/src/komodo_3p-cli
+    ```
+    Now we can create a symbolic link for the 3P instance of Komodo:
+    ```bash
+    sudo ln -s /home/$USER/komodo/src/komodo_3p-cli /usr/local/bin/komodo_3p-cli
+    ```
+    After building the 3P docker images, the cli binaries for the other 3P coins will be located in their `conf` folders, so we can create symbolic links for them as well:
+    ```bash
+    # AYA
+    sudo ln -s /home/$USER/.aryacoin/aryacoin-cli /usr/local/bin/aryacoin-cli
 
-# CHIPS
-sudo ln -s /home/$USER/.chips/chips-cli /usr/local/bin/chips-cli
+    # CHIPS
+    sudo ln -s /home/$USER/.chips/chips-cli /usr/local/bin/chips-cli
 
-# EMC2
-sudo ln -s /home/$USER/.einsteinium/einsteinium-cli /usr/local/bin/einsteinium-cli
+    # EMC2
+    sudo ln -s /home/$USER/.einsteinium/einsteinium-cli /usr/local/bin/einsteinium-cli
 
-# MCL
-# For MCL, use `komodo-cli -ac_name=MCL`, or create a wrapper script and symlink it
+    # MCL
+    # For MCL, use `komodo-cli -ac_name=MCL`, or create a wrapper script and symlink it
 
-# MIL
-sudo ln -s /home/$USER/.mil/mil-cli /usr/local/bin/mil-cli
+    # MIL
+    sudo ln -s /home/$USER/.mil/mil-cli /usr/local/bin/mil-cli
 
-# TOKEL
-sudo ln -s /home/$USER/.komodo/TOKEL/tokel-cli /usr/local/bin/tokel-cli
+    # TOKEL
+    sudo ln -s /home/$USER/.komodo/TOKEL/tokel-cli /usr/local/bin/tokel-cli
 
-# VRSC
-sudo ln -s /home/$USER/.komodo/VRSC/verus /usr/local/bin/verus-cli
-```
+    # VRSC
+    sudo ln -s /home/$USER/.komodo/VRSC/verus /usr/local/bin/verus-cli
+    ```
+
 ---
 ## Launch the daemons
 
-For the first time sync, we will run all the coin daemons normally. Later, we will create a `start` script to start the chains with `-pubkey=$pubkey` parameter which is required for notaring with Iguana.
+- First, create a start script with `nano start.sh` to start the main chains with:
 
-- Launch the Komodo daemon:
     ```bash
-    komodod &
-    ```
-- Launch the Litecoin daemon:
-    ```bash
+    #!/bin/bash
+    source pubkey.txt
+    echo $pubkey
+
     litecoind &
+
+    # For initial sync, you can just use `komodod &`, but the extra parameters are required for notarisation.
+    komodod -gen -genproclimit=1 -pubkey=$pubkey -minrelaytxfee=0.000035 -opretmintxfee=0.004 -notary=".litecoin/litecoin.conf" &
+
+    # Wait a bit before starting the other chains
+    sleep 60
+    komodod -pubkey=$pubkey -ac_name=BET -ac_supply=999999 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=BOTS -ac_supply=999999 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=CCL -ac_supply=200000000 -ac_end=1 -ac_cc=2 -addressindex=1 -spentindex=1 -addnode=142.93.136.89 -addnode=195.201.22.89 $1 &
+    komodod -pubkey=$pubkey -ac_name=CLC -ac_supply=99000000 -ac_reward=50000000 -ac_perc=100000000 -ac_founders=1 -ac_cc=45 -ac_public=1 -ac_snapshot=1440 -ac_pubkey=02df9bda7bfe2bcaa938b29a399fb0ba58cfb6cc3ddc0001062a600f60a8237ad9 -addnode=node.cryptocollider.com -ac_adaptivepow=6 $1 &
+    komodod -pubkey=$pubkey -ac_name=CRYPTO -ac_supply=999999 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=DEX -ac_supply=999999 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=GLEEC -ac_supply=210000000 -ac_public=1 -ac_staked=100 -addnode=95.217.161.126 $1 &
+    komodod -pubkey=$pubkey -ac_name=HODL -ac_supply=9999999 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=ILN -ac_supply=10000000000 -ac_cc=2 -addressindex=1 -spentindex=1 -addnode=51.75.122.83 $1 &
+    komodod -pubkey=$pubkey -ac_name=JUMBLR -ac_supply=999999 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=KOIN -ac_supply=125000000 -addnode=3.0.32.10 $1 &
+    komodod -pubkey=$pubkey -ac_name=MGW -ac_supply=999999 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=MORTY -ac_supply=90000000000 -ac_reward=100000000 -ac_cc=3 -ac_staked=10 -addnode=95.217.44.58 -addnode=138.201.136.145 $1 &
+    komodod -pubkey=$pubkey -ac_name=NINJA -ac_supply=100000000 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=PANGEA -ac_supply=999999 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=PIRATE -ac_supply=0 -ac_reward=25600000000 -ac_halving=77777 -ac_private=1 -addnode=88.99.212.81 $1 &
+    komodod -pubkey=$pubkey -ac_name=REVS -ac_supply=1300000 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=RICK -ac_supply=90000000000 -ac_reward=100000000 -ac_cc=3 -ac_staked=10 -addnode=95.217.44.58 -addnode=138.201.136.145 $1 &
+    komodod -pubkey=$pubkey -ac_name=SUPERNET -ac_supply=816061 -addnode=95.213.238.98 $1 &
+    komodod -pubkey=$pubkey -ac_name=THC -ac_supply=251253103 -ac_reward=360000000,300000000,240000000,180000000,150000000,90000000,0 -ac_staked=100 -ac_eras=7 -ac_end=500001,1000001,1500001,2000001,2500001,4500001,0 -ac_perc=233333333 -ac_cc=2 -ac_ccenable=229,236,240 -ac_script=2ea22c8020987fad30df055db6fd922c3a57e55d76601229ed3da3b31340112e773df3d0d28103120c008203000401ccb8 -ac_founders=150 -ac_cbmaturity=1 -ac_sapling=1 -addnode=157.230.45.184 -addnode=165.22.52.123 -earlytxid=7e4a76259e99c9379551389e9f757fc5f46c33ae922a8644dc2b187af2a6adc1 $1 &
     ```
-- Launch the remaining "Main" server daemons, and let them sync. You can find the launch parameters for each smart chain at [https://github.com/KomodoPlatform/coins/blob/master/launch/smartchains.json](https://github.com/KomodoPlatform/coins/blob/master/launch/smartchains.json). For example:
-    ```bash
-    komodod -ac_name=DOC -ac_supply=90000000000 -ac_reward=100000000 -ac_cc=3 -ac_staked=10 -addnode=65.21.77.109 -addnode=65.21.51.47 &
+
+- Save and exit the file, then make it executable with `chmod +x start.sh `. Now you can launch all the main chains with `./start.sh`!
 - Launch the 3P dockerised daemons:
     ```bash
     cd ~/notary_docker_3p

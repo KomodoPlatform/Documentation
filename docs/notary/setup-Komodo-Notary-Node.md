@@ -226,8 +226,8 @@ Iguana is the software used to perform notarizations, and needs to be installed 
 - **Create pubkey files**:
     Iguana will reference these files when launching to validate your node as an elected notary.
     ```bash
-    echo "<YOUR_MAIN_PUBKEY>" > ~/dPoW/iguana/pubkey.txt
-    echo "<YOUR_3P_PUBKEY>" > ~/dPoW/iguana/pubkey_3p.txt
+    echo "pubkey=<YOUR_MAIN_PUBKEY>" > ~/dPoW/iguana/pubkey.txt
+    echo "pubkey=<YOUR_3P_PUBKEY>" > ~/dPoW/iguana/pubkey_3p.txt
     ```
     Some scripts will also look for these files in the `komodo/src` folder, so we'll create a couple more symlinks:
     ```bash

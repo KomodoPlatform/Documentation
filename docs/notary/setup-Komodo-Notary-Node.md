@@ -641,7 +641,7 @@ This will take a few minutes to add peer notaries, and register the coin daemons
 ## Firewall and Ports
 
 Enable `ufw` and close all routes except `ssh`. Create rules to allow the following:
-- Each daemon's P2P port. You can find these in the daemon's `conf` file, or by looking at the response from `sudo netstat -plant`. For the 3P daemons, you can find the P2P port in the [`configure.sh`](https://github.com/smk762/notary_docker_3p/blob/main/mcl/configure.sh#L9) script in each coins subfolder (on the line that has `port=`).
+- Each daemon's P2P port. You can find these in the daemon's `conf` file, or by looking at the response from `sudo netstat -plant`. 
 - Iguana's Main P2P port (13348)
 - Iguana's 3P P2P port (13345)
 - AtomicDEX API P2P ports (38890 & 38900)
@@ -650,6 +650,7 @@ For example:
 ```bash
 # Main ports
 sudo ufw allow 7770 comment 'KMD Main P2P'
+sudo ufw allow 9333 comment 'LTC Main P2P'
 sudo ufw allow 20848 comment 'CCL Main P2P'
 sudo ufw allow 20931 comment 'CLC Main P2P'
 sudo ufw allow 23225 comment 'GLEEC Main P2P'

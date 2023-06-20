@@ -310,7 +310,7 @@ Iguana is the software used to perform notarizations, and needs to be installed 
     make V=1 -j$(nproc --all)
     ```
 - Execute `./build.sh` to compile the Litecoin binaries.
-- Create the data folder and a `komodo.conf` config file
+- Create the data folder and a `litecoin.conf` config file
     ```bash
     cd ~
     mkdir .litecoin

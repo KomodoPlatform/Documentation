@@ -79,6 +79,7 @@ If your notary seed or private keys are compromised, it not only places your ser
 It is recommended that you write down the randomly generated seed (24 words) in a piece of paper (or use a rugged physical backup like CryptoSteel), then type directly into your server, or generate the seed phrase on the server itself with a tool like [https://github.com/smk762/DragonhoundTools/blob/master/wallet/gen_seed.py](https://github.com/smk762/DragonhoundTools/blob/master/wallet/gen_seed.py).
 
 ---
+
 ## Security
 
 **Before doing anything further, ensure that your server is secure.**
@@ -336,7 +337,7 @@ chmod +x ~/dPoW/iguana/wp_7779
 
 ## Install LTC
 
-- Clone repo: ` git clone https://github.com/litecoin-project/litecoin -b 0.16`
+- Clone repo: `git clone https://github.com/litecoin-project/litecoin -b 0.16`
 - Enter repo folder `cd litecoin`
 - Create `build.sh` script with the following contents and give it executable permissions (`chmod +x build.sh`)
 
@@ -735,7 +736,7 @@ This will take a few minutes to add peer notaries, and register the coin daemons
 
 Enable `ufw` and close all routes except `ssh`. Create rules to allow the following:
 
-- Each daemon's P2P port. You can find these in the daemon's `conf` file, or by looking at the response from `sudo netstat -plant`. 
+- Each daemon's P2P port. You can find these in the daemon's `conf` file, or by looking at the response from `sudo netstat -plant`.
 - Iguana's Main P2P port (13348)
 - Iguana's 3P P2P port (13345)
 - AtomicDEX API P2P ports (38890 & 38900)

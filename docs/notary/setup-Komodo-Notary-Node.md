@@ -10,6 +10,7 @@ Traditionally, Komodo Notary Nodes have been setup using a "Main" and "Third par
 Beginning in season 7, the Komodo Notary Node network will allow running the old "Third party" node on the same server as the "Main" node. Though operators may use alternative methods of virtualisation such as proxmox, this guide will focus on using docker containers to run the "Third party" daemons.
 
 The steps for setting up your nodes are as follows:
+
 - Secure your Server
 - Install KMD and LTC Deamons, then launch them, import the private key linked to your "Main" elected pubkey, and let them sync. and let them sync (this may take a couple of days).
 - Launch the other "Main" server chains, import the private key linked to your "Main" elected pubkey, and let them sync.
@@ -40,6 +41,7 @@ Notary nodes **must** be run on a dedicated server in a Tier 3 datacenter. Runni
 This guide assumes you are using Ubuntu 20.04 LTS. If using Debian 11, scroll to the bottom of this guide for notes on required dependencies and build scripts.
 
 ---
+
 ## Creating notary pubkeys
 
 Once you have been elected as a notary node operator, you will need to generate your notary pubkeys and register them with the Komodo Team via your proposal on [https://github.com/KomodoPlatform/NotaryNodes](https://github.com/KomodoPlatform/NotaryNodes) soon after the election, so they can be included in the Komodo codebase for the next hardfork.
@@ -76,7 +78,6 @@ If your notary seed or private keys are compromised, it not only places your ser
 
 It is recommended that you write down the randomly generated seed (24 words) in a piece of paper (or use a rugged physical backup like CryptoSteel), then type directly into your server, or generate the seed phrase on the server itself with a tool like [https://github.com/smk762/DragonhoundTools/blob/master/wallet/gen_seed.py](https://github.com/smk762/DragonhoundTools/blob/master/wallet/gen_seed.py).
 
-
 ---
 ## Security
 
@@ -89,55 +90,61 @@ Make sure to use a password manager like [KeePassXC](https://keepassxc.org/) to 
 
 - **Update the system**: `sudo apt-get update && sudo apt-get upgrade -y`
 - **[Create a new user & give it `sudo` permissions](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04)**:
+
     ```bash
     adduser dragonhound # to add a new user
     usermod -aG sudo dragonhound # to give the user sudo permissions
     su - dragonhound # to switch to the new user
     ```
+
 - **Install [Fail2ban](https://linuxize.com/post/install-configure-fail2ban-on-ubuntu-20-04/)** with  `sudo apt install fail2ban`. It will start automatically after installation.
 - **Install [UFW](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-20-04)** (make sure to allow SSH access **before** enabling the firewall).
+
     ```bash
     sudo apt install ufw
     sudo ufw allow OpenSSH
     sudo ufw enable
     ```
+
 - **[Create an SSH key](https://www.unixtutorial.org/how-to-generate-ed25519-ssh-key/)** on your PC, then add the public SSH key to the server. This will allow you to login without a password. Repeat this step for each device you will use to access the server. For example:
-    - Create an ED25519 SSH key (e.g. on your laptop) with `ssh-keygen -t ed25519 -C "dragonhound@laptop"`
-    - View the public key with `cat ~/.ssh/id_ed25519.pub`.
-    - It will look like `ssh-ed25519 AAAAC3NzaC1lZD42STE5AAAAIK0wmN/Cr3JXqmLW7u+g9pTh+wyqDHpSQEIQczXkVx9q dragonhound@laptop`
+  - Create an ED25519 SSH key (e.g. on your laptop) with `ssh-keygen -t ed25519 -C "dragonhound@laptop"`
+  - View the public key with `cat ~/.ssh/id_ed25519.pub`.
+  - It will look like `ssh-ed25519 AAAAC3NzaC1lZD42STE5AAAAIK0wmN/Cr3JXqmLW7u+g9pTh+wyqDHpSQEIQczXkVx9q dragonhound@laptop`
 - **Add the SSH key to your server**:
-    - On the server, create a `.ssh` folder in your home directory with `mkdir ~/.ssh`
-    - Create a file to contain authorized keys with `nano ~/.ssh/authorized_keys`
-    - Paste the public key into the file, then save and exit.
-    - To confirm that the key works, open a new terminal on your desktop/laptop and run `ssh dragonhound@<SERVER_IP>`. If everything is working, you should be logged in without being asked for a password.
+  - On the server, create a `.ssh` folder in your home directory with `mkdir ~/.ssh`
+  - Create a file to contain authorized keys with `nano ~/.ssh/authorized_keys`
+  - Paste the public key into the file, then save and exit.
+  - To confirm that the key works, open a new terminal on your desktop/laptop and run `ssh dragonhound@<SERVER_IP>`. If everything is working, you should be logged in without being asked for a password.
 - **[Disable password authentication](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-20-04#disabling-password-authentication-on-your-server)**
-    - **Make sure you have added your SSH key to the server and confirmed it is working before doing this!**
-    - Open the SSH daemon config file with `sudo nano /etc/ssh/sshd_config`
-    - Find the line that says `#PasswordAuthentication yes` and change it to `PasswordAuthentication no` then save and exit the file.
-    - Restart the SSH daemon with `sudo systemctl restart sshd`
+  - **Make sure you have added your SSH key to the server and confirmed it is working before doing this!**
+  - Open the SSH daemon config file with `sudo nano /etc/ssh/sshd_config`
+  - Find the line that says `#PasswordAuthentication yes` and change it to `PasswordAuthentication no` then save and exit the file.
+  - Restart the SSH daemon with `sudo systemctl restart sshd`
 - **[Disable `root` login](https://www.howtogeek.com/howto/linux/security-tip-disable-root-ssh-login-on-linux/)**
-    - Open the SSH daemon config file with `sudo nano /etc/ssh/sshd_config`
-    - Set `PermitRootLogin no` then save and exit the file
-    - Restart the SSH daemon with `sudo systemctl restart sshd`
+  - Open the SSH daemon config file with `sudo nano /etc/ssh/sshd_config`
+  - Set `PermitRootLogin no` then save and exit the file
+  - Restart the SSH daemon with `sudo systemctl restart sshd`
 - **[Add 32GB of swap space](https://www.digitalocean.com/community/tutorial_collections/how-to-add-swap-space)**
-    - View existing swap space with `sudo swapon --show`, existing physical an virtual memory with `free -h`, and disk space with `df -h`.
-    - Create a 32GB swap file with `sudo fallocate -l 32G /swapfile`
-    - Restrict swap file permissions to root only with `sudo chmod 600 /swapfile`
-    - Mark the file as swap space with `sudo mkswap /swapfile`
-    - Activate the swap file with `sudo swapon /swapfile`
-    - Verify that the swap space is active with `sudo swapon --show` and `free -h`
-    - To make the swap file permanent, we'll edit the `fstab` file.
+  - View existing swap space with `sudo swapon --show`, existing physical an virtual memory with `free -h`, and disk space with `df -h`.
+  - Create a 32GB swap file with `sudo fallocate -l 32G /swapfile`
+  - Restrict swap file permissions to root only with `sudo chmod 600 /swapfile`
+  - Mark the file as swap space with `sudo mkswap /swapfile`
+  - Activate the swap file with `sudo swapon /swapfile`
+  - Verify that the swap space is active with `sudo swapon --show` and `free -h`
+  - To make the swap file permanent, we'll edit the `fstab` file.
         - First, backup the `fstab` file with `sudo cp /etc/fstab /etc/fstab.bak`
         - Update it with `echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab`
-    - Now your swap space should be retained after rebooting.
+  - Now your swap space should be retained after rebooting.
 - **[Change the SSH port](https://linuxhandbook.com/change-ssh-port/)** (optional, but recommended)
-    - Open the ssh daemon config file with `sudo nano /etc/ssh/sshd_config`
-    - Change the `Port` value to something other than `22` (e.g. `Port 2222`)
-    - Save and exit the file, then restart the SSH service with `sudo systemctl restart sshd`
-    - Test the new port with `ssh dragonhound@<SERVER_IP> -p 2222`
+  - Open the ssh daemon config file with `sudo nano /etc/ssh/sshd_config`
+  - Change the `Port` value to something other than `22` (e.g. `Port 2222`)
+  - Save and exit the file, then restart the SSH service with `sudo systemctl restart sshd`
+  - Test the new port with `ssh dragonhound@<SERVER_IP> -p 2222`
 
 ---
+
 ## Additional Configuration Tweaks
+
 The steps below are optional, but recommended to give your node a better chance of performing well based on the experiences of prior season Natary Node Operators.
 
 ### Set `ulimit` parameters on Ubuntu permanently
@@ -151,38 +158,50 @@ ulimit -a   # see all the kernel parameters
 ulimit -n   # see the number of open files
 ulimit -n 1000000  #  set the number open files to 1000000
 ```
+
 This will only set the `ulimit` parameters for the current command terminal and user, meaning that after a reboot you’ll need to set the parameter again. Do the following to set it permanently:
 
 - Edit the `/etc/security/limits.conf` file
+
     ```bash
     sudo nano /etc/security/limits.conf
     ```
+
 - Add these lines:
+
     ```bash
     * soft nofile 1000000
     * hard nofile 1000000
     ```
+
 - Save and close file
 
 ### Set `pam_limits` to `required`
+
 Linux uses PAM (pluggable authentication modules) in the authentication process as a layer that mediates between user and application. The `pam_limits` PAM module sets limits on the system resources that can be obtained in a user-session.
 
 - Edit the `/etc/pam.d/common-session` file
+
     ```bash
     sudo nano /etc/pam.d/common-session
     ```
+
 - Add this line:
+
     ```bash
     session required pam_limits.so
     ```
+
 - Save and close the file.
 
 We're done! Now let's stop all our wallet daemons safely with RPC commands and reboot the server using `sudo reboot` or `sudo shutdown -r` command. After the reboot, log back in and check the `ulimit` parameters again.
+
 ```bash
 ulimit -n
 ```
 
 ---
+
 ## Install Iguana & Coin Daemons
 
 The daemons will take a couple of days to sync, so it's best to get them started as soon as possible. If you encounter any errors, please join the `#notarynode` channel on the [Komodo Discord Server](https://komodoplatform.com/discord) for help.
@@ -193,17 +212,20 @@ The daemons will take a couple of days to sync, so it's best to get them started
 
 :::
 
-- **Install dependencies:** 
+- **Install dependencies:**
+
     ```bash
     sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python3 python3-zmq zlib1g-dev wget libcurl4-gnutls-dev bsdmainutils automake curl libsodium-dev jq libfmt-dev autotools-dev cmake clang htop libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libssl-dev -y
     ```
 
 ---
+
 ## Install Iguana
 
 Iguana is the software used to perform notarizations, and needs to be installed from the [dPoW](https://github.com/KomodoPlatform/dPoW) repository.
 
 - **Install nanomsg** (required for Iguana):
+
     ```bash
     cd ~
     git clone https://github.com/nanomsg/nanomsg
@@ -215,6 +237,7 @@ Iguana is the software used to perform notarizations, and needs to be installed 
     ```
 
 - **Clone the dPoW repository and build Iguana**:
+
     ```bash
     # Clone repository
     git clone https://github.com/KomodoPlatform/dPoW -b season-seven
@@ -223,50 +246,66 @@ Iguana is the software used to perform notarizations, and needs to be installed 
     # Build Iguana
     make
     ```
+
 - **Create pubkey files**:
     Iguana will reference these files when launching to validate your node as an elected notary.
+
     ```bash
     echo "pubkey=<YOUR_MAIN_PUBKEY>" > ~/dPoW/iguana/pubkey.txt
     echo "pubkey=<YOUR_3P_PUBKEY>" > ~/dPoW/iguana/pubkey_3p.txt
     ```
+
     Some scripts will also look for these files in the `komodo/src` folder, so we'll create a couple more symlinks:
+
     ```bash
     ln -s ~/dPoW/iguana/pubkey.txt ~/komodo/src/pubkey.txt
     ln -s ~/dPoW/iguana/pubkey_3p.txt ~/komodo/src/pubkey_3p.txt
     ```
+
 - **Create `wp` files**:
-    - These files will be used to unlock your wallets when Iguana launches, and are named according to the iguana port they are targeting. The contents will include your seed phrase (or a private key) from the Main or 3P coins you want to unlock for notarisation.
-    - The Main Iguana uses port 7776. Create a file called `~/dPoW/iguana/wp_7776` and add the contents as below:
-        ```bash
-        curl --url "http://127.0.0.1:7776" --data '{
-            "method": "walletpassphrase",
-            "params": ["YOUR_MAIN_SEEDPHRASE_OR_PRIVATE_KEY", 9999999]
-        }'
-        ```
-    - The Third Party Iguana uses port 7779. Create a file called `~/dPoW/iguana/wp_7779` and add the contents as below:
-        ```bash
-        curl --url "http://127.0.0.1:7779" --data '{
-            "method": "walletpassphrase",
-            "params": ["YOUR_3P_SEEDPHRASE_OR_PRIVATE_KEY", 9999999]
-        }'
-        ```
-    - Make the files executable:
-        ```bash
-        chmod +x ~/dPoW/iguana/wp_7776
-        chmod +x ~/dPoW/iguana/wp_7779
-        ```
+
+  - These files will be used to unlock your wallets when Iguana launches, and are named according to the iguana port they are targeting. The contents will include your seed phrase (or a private key) from the Main or 3P coins you want to unlock for notarisation.
+  - The Main Iguana uses port 7776. Create a file called `~/dPoW/iguana/wp_7776` and add the contents as below:
+
+```bash
+curl --url "http://127.0.0.1:7776" --data '{
+    "method": "walletpassphrase",
+    "params": ["YOUR_MAIN_SEEDPHRASE_OR_PRIVATE_KEY", 9999999]
+}'
+```
+
+- The Third Party Iguana uses port 7779. Create a file called `~/dPoW/iguana/wp_7779` and add the contents as below:
+
+```bash
+curl --url "http://127.0.0.1:7779" --data '{
+    "method": "walletpassphrase",
+    "params": ["YOUR_3P_SEEDPHRASE_OR_PRIVATE_KEY", 9999999]
+}'
+```
+
+- Make the files executable:
+
+```bash
+chmod +x ~/dPoW/iguana/wp_7776
+chmod +x ~/dPoW/iguana/wp_7779
+```
+
 ---
+
 ## Install KMD
+
 - Clone repo: `git clone https://github.com/KomodoPlatform/komodo -b master`
 - Enter repo folder `cd komodo`
 - Fetch Zcash params: `./zcutil/fetch-params.sh`
 - Build Komodo: `./zcutil/build.sh -j$(nproc)`
 - Create the data folder and a `komodo.conf` config file
+
     ```bash
     cd ~
     mkdir .komodo
     nano ~/.komodo/komodo.conf
     ```
+
     Add the following lines to the `komodo.conf` file and save it (replace rpcuser and rpcpassword)
 
     ```bash
@@ -286,6 +325,7 @@ Iguana is the software used to perform notarizations, and needs to be installed 
     addnode=209.222.101.247 # Dragonhound_NA
     addnode=103.195.100.32 # Dragonhound_DEV
     ```
+
     Restrict access to the `komodo.conf` file
 
     ```bash
@@ -293,10 +333,13 @@ Iguana is the software used to perform notarizations, and needs to be installed 
     ```
 
 ---
+
 ## Install LTC
+
 - Clone repo: ` git clone https://github.com/litecoin-project/litecoin -b 0.16`
 - Enter repo folder `cd litecoin`
 - Create `build.sh` script with the following contents and give it executable permissions (`chmod +x build.sh`)
+
     ```bash
     #!/bin/bash
     # LTC & 3P Coins build script for Ubuntu & Debian (c) Decker
@@ -309,14 +352,18 @@ Iguana is the software used to perform notarizations, and needs to be installed 
 
     make V=1 -j$(nproc --all)
     ```
+
 - Execute `./build.sh` to compile the Litecoin binaries.
 - Create the data folder and a `litecoin.conf` config file
+
     ```bash
     cd ~
     mkdir .litecoin
     nano ~/.litecoin/litecoin.conf
     ```
+
 - Insert the following contents inside the `litecoin.conf` file and save it. (change the `rpcuser` and `rpcpassword` values)
+
     ```bash
     txindex=1
     rpcport=9332
@@ -328,41 +375,55 @@ Iguana is the software used to perform notarizations, and needs to be installed 
     ```
 
 - Restrict access to the `litecoin.conf` file
+
     ```bash
     chmod 600 ~/.litecoin/litecoin.conf
     ```
 
 ---
+
 ## Install Third Party coins daemons in Docker
+
 Follow the instructions in [https://github.com/smk762/notary_docker_3p#notary_docker_3p](https://github.com/smk762/notary_docker_3p#notary_docker_3p) to setup the third party coins in docker.
 
 If you need help, please reach out to the Komodo Discord #notary-node channel.
 
 ---
+
 ## Create Symbolic Links for deamons and cli's
+
 - **For the Main coins**:
+
     ```bash
     sudo ln -s ~/komodo/src/komodod /usr/local/bin/komodod
     sudo ln -s ~/komodo/src/komodo-cli /usr/local/bin/komodo-cli
     sudo ln -s ~/litecoin/src/litecoind /usr/local/bin/litecoind
     sudo ln -s ~/litecoin/src/litecoin-cli /usr/local/bin/litecoin-cli
     ```
+
 - **For the Third Party coins**, `komodo-cli` will be using a different configuration and data folder, so we'll create a wrapper script to launch the daemon and cli with the correct parameters:
 
     Open wrapper script file for the deamon cli with `nano ~/komodo/src/komodo_3p-cli` and put the following inside:
+
     ```bash
     #!/bin/bash
     komodo-cli -conf=/home/${USER}/.komodo_3p/komodo.conf $@
     ```
+
     Make the wrapper script executable:
+
     ```bash
     chmod +x /home/$USER/komodo/src/komodo_3p-cli
     ```
+
     Now we can create a symbolic link for the 3P instance of Komodo:
+
     ```bash
     sudo ln -s /home/$USER/komodo/src/komodo_3p-cli /usr/local/bin/komodo_3p-cli
     ```
+
     After building the 3P docker images, the cli binaries for the other 3P coins will be located in their `conf` folders, so we can create symbolic links for them as well:
+
     ```bash
     # AYA
     sudo ln -s /home/$USER/.aryacoin/aryacoin-cli /usr/local/bin/aryacoin-cli
@@ -387,6 +448,7 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
     ```
 
 ---
+
 ## Launch the daemons
 
 - First, create a start script with `nano start.sh` to start the main chains with:
@@ -425,8 +487,9 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
     komodod -pubkey=$pubkey -ac_name=THC -ac_supply=251253103 -ac_reward=360000000,300000000,240000000,180000000,150000000,90000000,0 -ac_staked=100 -ac_eras=7 -ac_end=500001,1000001,1500001,2000001,2500001,4500001,0 -ac_perc=233333333 -ac_cc=2 -ac_ccenable=229,236,240 -ac_script=2ea22c8020987fad30df055db6fd922c3a57e55d76601229ed3da3b31340112e773df3d0d28103120c008203000401ccb8 -ac_founders=150 -ac_cbmaturity=1 -ac_sapling=1 -addnode=157.230.45.184 -addnode=165.22.52.123 -earlytxid=7e4a76259e99c9379551389e9f757fc5f46c33ae922a8644dc2b187af2a6adc1 $1 &
     ```
 
-- Save and exit the file, then make it executable with `chmod +x start.sh `. Now you can launch all the main chains with `./start.sh`!
+- Save and exit the file, then make it executable with `chmod +x start.sh`. Now you can launch all the main chains with `./start.sh`!
 - Launch the 3P dockerised daemons:
+
     ```bash
     cd ~/notary_docker_3p
     
@@ -437,7 +500,9 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
     docker-compose up <TICKER> -d
 
     ```
+
 - **Import your private keys**
+
     ```bash
     # For Komodo
     komodo-cli importprivkey <KMD_PRIVATE_KEY>
@@ -456,7 +521,9 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
     cd ~/notary_docker_3p
     ./importkeys.sh
     ```
+
 - **Check the sync status**
+
     ```bash
     # Check the status of the KMD sync process
     tail -f ~/.komodo/debug.log
@@ -479,10 +546,13 @@ The debug.log will have lines like:
 When you see `progress=1.000000`, the chain is in sync! This can take a while, so be patient.
 
 Once sync'd, we can confirm our private keys were correctly imported by using the `validateaddress` command with the KMD address linked to our private key. For example:
+
 ```bash
 komodo-cli validateaddress RDragoNHdwovvsDLSLMiAEzEArAD3kq6FN
 ```
+
 This will return a JSON object with the address details. If the address is valid, you will see `"ismine": true`.
+
 ```json
 {
   "isvalid": true,
@@ -498,8 +568,8 @@ This will return a JSON object with the address details. If the address is valid
 }
 ```
 
-
 ---
+
 ## AtomicDEX Seed node setup (optional, but recommended)
 
 Simple scripts to setup and configure MM2 as a seednode on your 3P server are available at [https://github.com/smk762/nn_mm2_seed](https://github.com/smk762/nn_mm2_seed). The mm2 seed node will also need ports `38890` and `38900` opened on the 3p server.
@@ -507,6 +577,7 @@ Simple scripts to setup and configure MM2 as a seednode on your 3P server are av
 **This may be included in the 3P dockerised setup in the future.**
 
 ---
+
 ## Stop All Coin Daemons Safely
 
 Once you've completed syncing, imported and validated your keys in all your daemons, we'll stop all the daemons for some final configuration.
@@ -536,7 +607,9 @@ docker compose stop
 ```
 
 ---
+
 ## Restrict access to config files
+
 Once all the chains' daemons have stopped, let's restrict access to all the `.conf` files inside `~/.komodo` and `~/.komodo_3p`  folders
 
 ```bash
@@ -545,32 +618,40 @@ find ~/.komodo_3p -type f -iname "*.conf" -exec chmod 600 {} \;
 ```
 
 ---
+
 ## Address whitelisting (optional, but recommended)
 
 If you are using a whitelist for incoming transactions (recommended to avoid dust attacks!) funding top ups will come from the dragonhound_DEV nodes using the addresses `RHi882Amab35uXjqBZjVxgEgmkkMu454KK` (Main), and `RLdmqsXEor84FC8wqDAZbkmJLpgf2nUSkq` (3P), so add these addresses to your respective whitelists. This can be done by:
+
 - Adding `-whitelistaddress=<address>` to your daemon launch strings, or
 - Adding `whitelistaddress=<address>` to your daemon `conf` files
 
 ---
+
 ## Create `start` Script
 
 We need a `start` script in the home dir to start Komodo, Smart Chains and all 3rd party coin daemons with the `-pubkey` option. `-pubkey` is not required for LTC daemon, but other coins **must** be launched with it to be able to notarise.
 
 - You can also use the `setpubkey` command to set the pubkey for a running daemon. For example:
+
     ```bash
     komodo-cli setpubkey <pubkey>
     ```
 
 - Alternatively, you can set the pubkey in your `conf` file to make sure it is set every time you launch a daemon. For example:
+
     ```bash
     echo "pubkey=<pubkey>" >> ~/.komodo/komodo.conf
     ```
 
 - Create and open a `start` file
+
     ```bash
     nano ~/start
     ```
+
 - Add the following lines:
+
     ```bash
     #!/bin/bash
 
@@ -589,12 +670,15 @@ We need a `start` script in the home dir to start Komodo, Smart Chains and all 3
     cd ~/dPoW/iguana
     ./assetchains.old
     ```
+
 - Make the `start` file executable:
+
     ```bash
     chmod +x start
     ```
 
 Note the KMD launch string includes some extra parameters:
+
 - `-gen` - enables mining
 - `-genproclimit=1` - sets the number of threads to use for mining
 - `-minrelaytxfee=0.000035` - sets the minimum relay fee for transactions
@@ -611,13 +695,16 @@ cd ~
 ```
 
 Don't forget to also restart the dockerised 3rd party daemons.
+
 ```bash
 cd ~/nn_docker_3p
 ./start_3p.sh
 ```
 
 ---
-## Start `Iguana` and begin notarising!
+
+## Start `Iguana` and begin notarising
+
 - **Notaries are responsible funding their Notary KMD addresses - funds for other chains will be provided from the Komodo team.**
 - All notary addresses on all dPoW coins (except KMD) will be funded at the start of a season, and periodically topped up as the season progresses.
 - Please contact `smk` on Discord if you need a top up.
@@ -625,28 +712,36 @@ cd ~/nn_docker_3p
 - At the end of the season, any remaining funds are to be returned to `smk` for redistribution to the notaries elected for the next season.
 
 **Make sure all daemons have started properly and are responding to RPC commands before starting Iguana.**
+
 - To start notarising the Main coins, run:
+
     ```bash
     cd ~/dPoW/iguana
     ./m_notary_main
     ```
+
 - To start notarising the 3rd party coins, run:
+
     ```bash
     cd ~/dPoW/iguana
     ./m_notary_3rdparty_docker
     ```
+
 This will take a few minutes to add peer notaries, and register the coin daemons with Iguana. You will see `INIT with 64 notaries` once the process finishes.
 
 ---
+
 ## Firewall and Ports
 
 Enable `ufw` and close all routes except `ssh`. Create rules to allow the following:
+
 - Each daemon's P2P port. You can find these in the daemon's `conf` file, or by looking at the response from `sudo netstat -plant`. 
 - Iguana's Main P2P port (13348)
 - Iguana's 3P P2P port (13345)
 - AtomicDEX API P2P ports (38890 & 38900)
 
 For example:
+
 ```bash
 # Main ports
 sudo ufw allow 7770 comment 'KMD Main P2P'
@@ -676,16 +771,22 @@ sudo ufw allow 13345 comment 'Iguana 3P P2P'
 sudo ufw allow 38890 comment 'AtomicDEX P2P'
 sudo ufw allow 38900 comment 'AtomicDEX P2P'
 ```
+
 **Make sure you dont expose any RPC ports! This may give the whole internet access to your deamons!**
- 
+
 ---
+
 ## NN Scripts
+
 There are many open sourced scripts for managing your Komodo Notary Node servers. If you're having trouble with something, you can have a look at [these tools](https://github.com/KomodoPlatform/komodotools), or ask the other NN's, who will show you the scripts they use to overcome issues. With that being said, if you find a way to make a job easier or find a way to better the ecosystem, please let the rest of the NN OPs know, we would love to hear it.
 
 ---
+
 ## Setup for Debian 11
+
 Install the following dependancies:
-```
+
+```bash
 sudo apt-get install -y tmux dc bc dnsutils speedtest-cli build-essential git libsodium-dev libssl-dev pkg-config autoconf automake bsdmainutils cmake curl g++-multilib htop libboost-all-dev libc6-dev libgtest-dev libtool m4 software-properties-common unzip wget zlib1g-dev binutils-dev clang jq libcurl4-openssl-dev libdb++-dev libevent-dev libexpat1-dev libgnutls28-dev libldns-dev liblzma-dev libnanomsg-dev libncurses-dev libprotobuf-dev libqrencode-dev libreadline-dev libunwind-dev ncurses-dev ntp ntpdate protobuf-compiler python3-pip
 ```
 

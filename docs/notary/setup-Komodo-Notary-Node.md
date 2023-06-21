@@ -402,52 +402,6 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
     sudo ln -s ~/litecoin/src/litecoin-cli /usr/local/bin/litecoin-cli
     ```
 
-- **For the Third Party coins**, `komodo-cli` will be using a different configuration and data folder, so we'll create a wrapper script to launch the daemon and cli with the correct parameters:
-
-    Open wrapper script file for the deamon cli with `nano ~/komodo/src/komodo_3p-cli` and put the following inside:
-
-    ```bash
-    #!/bin/bash
-    komodo-cli -conf=/home/${USER}/.komodo_3p/komodo.conf $@
-    ```
-
-    Make the wrapper script executable:
-
-    ```bash
-    chmod +x /home/$USER/komodo/src/komodo_3p-cli
-    ```
-
-    Now we can create a symbolic link for the 3P instance of Komodo:
-
-    ```bash
-    sudo ln -s /home/$USER/komodo/src/komodo_3p-cli /usr/local/bin/komodo_3p-cli
-    ```
-
-    After building the 3P docker images, the cli binaries for the other 3P coins will be located in their `conf` folders, so we can create symbolic links for them as well:
-
-    ```bash
-    # AYA
-    sudo ln -s /home/$USER/.aryacoin/aryacoin-cli /usr/local/bin/aryacoin-cli
-
-    # CHIPS
-    sudo ln -s /home/$USER/.chips/chips-cli /usr/local/bin/chips-cli
-
-    # EMC2
-    sudo ln -s /home/$USER/.einsteinium/einsteinium-cli /usr/local/bin/einsteinium-cli
-
-    # MCL
-    # For MCL, use `komodo-cli -ac_name=MCL`, or create a wrapper script and symlink it
-
-    # MIL
-    sudo ln -s /home/$USER/.mil/mil-cli /usr/local/bin/mil-cli
-
-    # TOKEL
-    sudo ln -s /home/$USER/.komodo_3p/TOKEL/tokel-cli /usr/local/bin/tokel-cli
-
-    # VRSC
-    sudo ln -s /home/$USER/.komodo_3p/VRSC/verus /usr/local/bin/verus-cli
-    ```
-
 ---
 
 ## Launch the daemons
@@ -456,36 +410,21 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
 
     ```bash
     #!/bin/bash
-    source pubkey.txt
-    echo $pubkey
 
+    # Get our pubkey
+    source ~/komodo/src/pubkey.txt
+
+    # Start LTC
     litecoind &
-
-    # For initial sync, you can just use `komodod &`, but the extra parameters are required for notarisation.
-    komodod -gen -genproclimit=1 -pubkey=$pubkey -minrelaytxfee=0.000035 -opretmintxfee=0.004 -notary=".litecoin/litecoin.conf" &
-
-    # Wait a bit before starting the other chains
     sleep 60
-    komodod -pubkey=$pubkey -ac_name=BET -ac_supply=999999 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=BOTS -ac_supply=999999 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=CCL -ac_supply=200000000 -ac_end=1 -ac_cc=2 -addressindex=1 -spentindex=1 -addnode=142.93.136.89 -addnode=195.201.22.89 $1 &
-    komodod -pubkey=$pubkey -ac_name=CLC -ac_supply=99000000 -ac_reward=50000000 -ac_perc=100000000 -ac_founders=1 -ac_cc=45 -ac_public=1 -ac_snapshot=1440 -ac_pubkey=02df9bda7bfe2bcaa938b29a399fb0ba58cfb6cc3ddc0001062a600f60a8237ad9 -addnode=node.cryptocollider.com -ac_adaptivepow=6 $1 &
-    komodod -pubkey=$pubkey -ac_name=CRYPTO -ac_supply=999999 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=DEX -ac_supply=999999 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=GLEEC -ac_supply=210000000 -ac_public=1 -ac_staked=100 -addnode=95.217.161.126 $1 &
-    komodod -pubkey=$pubkey -ac_name=HODL -ac_supply=9999999 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=ILN -ac_supply=10000000000 -ac_cc=2 -addressindex=1 -spentindex=1 -addnode=51.75.122.83 $1 &
-    komodod -pubkey=$pubkey -ac_name=JUMBLR -ac_supply=999999 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=KOIN -ac_supply=125000000 -addnode=3.0.32.10 $1 &
-    komodod -pubkey=$pubkey -ac_name=MGW -ac_supply=999999 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=MORTY -ac_supply=90000000000 -ac_reward=100000000 -ac_cc=3 -ac_staked=10 -addnode=95.217.44.58 -addnode=138.201.136.145 $1 &
-    komodod -pubkey=$pubkey -ac_name=NINJA -ac_supply=100000000 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=PANGEA -ac_supply=999999 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=PIRATE -ac_supply=0 -ac_reward=25600000000 -ac_halving=77777 -ac_private=1 -addnode=88.99.212.81 $1 &
-    komodod -pubkey=$pubkey -ac_name=REVS -ac_supply=1300000 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=RICK -ac_supply=90000000000 -ac_reward=100000000 -ac_cc=3 -ac_staked=10 -addnode=95.217.44.58 -addnode=138.201.136.145 $1 &
-    komodod -pubkey=$pubkey -ac_name=SUPERNET -ac_supply=816061 -addnode=95.213.238.98 $1 &
-    komodod -pubkey=$pubkey -ac_name=THC -ac_supply=251253103 -ac_reward=360000000,300000000,240000000,180000000,150000000,90000000,0 -ac_staked=100 -ac_eras=7 -ac_end=500001,1000001,1500001,2000001,2500001,4500001,0 -ac_perc=233333333 -ac_cc=2 -ac_ccenable=229,236,240 -ac_script=2ea22c8020987fad30df055db6fd922c3a57e55d76601229ed3da3b31340112e773df3d0d28103120c008203000401ccb8 -ac_founders=150 -ac_cbmaturity=1 -ac_sapling=1 -addnode=157.230.45.184 -addnode=165.22.52.123 -earlytxid=7e4a76259e99c9379551389e9f757fc5f46c33ae922a8644dc2b187af2a6adc1 $1 &
+
+    # Start KMD
+    komodod -gen -genproclimit=1 -pubkey=$pubkey -minrelaytxfee=0.000035 -opretmintxfee=0.004 -notary=".litecoin/litecoin.conf" &
+    sleep 600
+
+    # Start all other Main Smart Chains
+    cd ~/dPoW/iguana
+    ./assetchains.old
     ```
 
 - Save and exit the file, then make it executable with `chmod +x start.sh`. Now you can launch all the main chains with `./start.sh`!
@@ -516,11 +455,13 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
 
     # For all main smart chains
     cd ~/dPoW/iguana
-    ./assetchains.old
+    ./listassetchains | while read chain; do
+        echo $chain
+        komodo-cli -ac_name=$chain importprivkey <KMD_PRIVATE_KEY>
+    done
 
     # For 3P deamons
-    cd ~/notary_docker_3p
-    ./importkeys.sh
+    "Use the 3rd party coins' cli binaries to import the private keys for each coin."
     ```
 
 - **Check the sync status**

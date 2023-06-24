@@ -285,11 +285,11 @@ curl --url "http://127.0.0.1:7779" --data '{
 }'
 ```
 
-- Make the files executable:
+- Restrict file permissions and make executable:
 
 ```bash
-chmod +x ~/dPoW/iguana/wp_7776
-chmod +x ~/dPoW/iguana/wp_7779
+chmod 700 ~/dPoW/iguana/wp_7776
+chmod 700 ~/dPoW/iguana/wp_7779
 ```
 
 ---

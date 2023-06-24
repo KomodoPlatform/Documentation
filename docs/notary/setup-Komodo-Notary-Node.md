@@ -94,6 +94,7 @@ Make sure to use a password manager like [KeePassXC](https://keepassxc.org/) to 
 
     ```bash
     adduser dragonhound # to add a new user
+    passwd dragonhound # set a password for new user
     usermod -aG sudo dragonhound # to give the user sudo permissions
     su - dragonhound # to switch to the new user
     ```

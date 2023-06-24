@@ -259,13 +259,6 @@ Iguana is the software used to perform notarizations, and needs to be installed 
     echo "pubkey=<YOUR_3P_PUBKEY>" > ~/dPoW/iguana/pubkey_3p.txt
     ```
 
-    Some scripts will also look for these files in the `komodo/src` folder, so we'll create a couple more symlinks:
-
-    ```bash
-    ln -s ~/dPoW/iguana/pubkey.txt ~/komodo/src/pubkey.txt
-    ln -s ~/dPoW/iguana/pubkey_3p.txt ~/komodo/src/pubkey_3p.txt
-    ```
-
 - **Create `wp` files**:
 
   - These files will be used to unlock your wallets when Iguana launches, and are named according to the iguana port they are targeting. The contents will include your seed phrase (or a private key) from the Main or 3P coins you want to unlock for notarisation.
@@ -334,6 +327,13 @@ chmod 700 ~/dPoW/iguana/wp_7779
 
     ```bash
     chmod 600 ~/.komodo/komodo.conf
+    ```
+
+    symlink pubkey files to komodo directory:
+
+    ```bash
+    ln -s ~/dPoW/iguana/pubkey.txt ~/komodo/src/pubkey.txt
+    ln -s ~/dPoW/iguana/pubkey_3p.txt ~/komodo/src/pubkey_3p.txt
     ```
 
 ---

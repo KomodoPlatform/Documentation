@@ -115,6 +115,7 @@ Make sure to use a password manager like [KeePassXC](https://keepassxc.org/) to 
   - On the server, create a `.ssh` folder in your home directory with `mkdir ~/.ssh`
   - Create a file to contain authorized keys with `nano ~/.ssh/authorized_keys`
   - Paste the public key into the file, then save and exit.
+  - Restrict file permissions with `sudo chmod 600 ~/.ssh/authorized_keys`
   - To confirm that the key works, open a new terminal on your desktop/laptop and run `ssh dragonhound@<SERVER_IP>`. If everything is working, you should be logged in without being asked for a password.
 - **[Disable password authentication](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-20-04#disabling-password-authentication-on-your-server)**
   - **Make sure you have added your SSH key to the server and confirmed it is working before doing this!**

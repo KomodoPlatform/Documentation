@@ -140,6 +140,7 @@ Make sure to use a password manager like [KeePassXC](https://keepassxc.org/) to 
 - **[Change the SSH port](https://linuxhandbook.com/change-ssh-port/)** (optional, but recommended)
   - Open the ssh daemon config file with `sudo nano /etc/ssh/sshd_config`
   - Change the `Port` value to something other than `22` (e.g. `Port 2222`)
+  - Allow the new port in the firewall `sudo ufw allow 2222 comment ssh`
   - Save and exit the file, then restart the SSH service with `sudo systemctl restart sshd`
   - Test the new port with `ssh dragonhound@<SERVER_IP> -p 2222`
 

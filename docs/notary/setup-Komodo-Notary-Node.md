@@ -216,6 +216,7 @@ Iguana is the software used to perform notarizations, and needs to be installed 
 
 - **Clone the dPoW repository and build Iguana**:
     ```bash
+    cd ~
     # Clone repository
     git clone https://github.com/KomodoPlatform/dPoW -b season-seven
     cd dPoW/iguana
@@ -294,7 +295,7 @@ Iguana is the software used to perform notarizations, and needs to be installed 
 
 ---
 ## Install LTC
-- Clone repo: ` git clone https://github.com/litecoin-project/litecoin -b 0.16`
+- Clone repo: `git clone https://github.com/litecoin-project/litecoin -b 0.16`
 - Enter repo folder `cd litecoin`
 - Create `build.sh` script with the following contents and give it executable permissions (`chmod +x build.sh`)
     ```bash

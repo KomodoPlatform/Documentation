@@ -295,7 +295,7 @@ chmod +x ~/dPoW/iguana/wp_7779
 ---
 
 ## Install KMD
-
+- Do to home folder `cd ~`
 - Clone repo: `git clone https://github.com/KomodoPlatform/komodo -b master`
 - Enter repo folder `cd komodo`
 - Fetch Zcash params: `./zcutil/fetch-params.sh`

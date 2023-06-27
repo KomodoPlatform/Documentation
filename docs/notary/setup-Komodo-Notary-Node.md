@@ -94,6 +94,7 @@ Make sure to use a password manager like [KeePassXC](https://keepassxc.org/) to 
 
     ```bash
     adduser dragonhound # to add a new user
+    passwd dragonhound # set a password for new user
     usermod -aG sudo dragonhound # to give the user sudo permissions
     su - dragonhound # to switch to the new user
     ```
@@ -115,6 +116,7 @@ Make sure to use a password manager like [KeePassXC](https://keepassxc.org/) to 
   - On the server, create a `.ssh` folder in your home directory with `mkdir ~/.ssh`
   - Create a file to contain authorized keys with `nano ~/.ssh/authorized_keys`
   - Paste the public key into the file, then save and exit.
+  - Restrict file permissions with `sudo chmod 600 ~/.ssh/authorized_keys` and `sudo chmod 700 ~/.ssh`
   - To confirm that the key works, open a new terminal on your desktop/laptop and run `ssh dragonhound@<SERVER_IP>`. If everything is working, you should be logged in without being asked for a password.
 - **[Disable password authentication](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-20-04#disabling-password-authentication-on-your-server)**
   - **Make sure you have added your SSH key to the server and confirmed it is working before doing this!**
@@ -139,6 +141,7 @@ Make sure to use a password manager like [KeePassXC](https://keepassxc.org/) to 
 - **[Change the SSH port](https://linuxhandbook.com/change-ssh-port/)** (optional, but recommended)
   - Open the ssh daemon config file with `sudo nano /etc/ssh/sshd_config`
   - Change the `Port` value to something other than `22` (e.g. `Port 2222`)
+  - Allow the new port in the firewall `sudo ufw allow 2222 comment ssh`
   - Save and exit the file, then restart the SSH service with `sudo systemctl restart sshd`
   - Test the new port with `ssh dragonhound@<SERVER_IP> -p 2222`
 
@@ -216,7 +219,7 @@ The daemons will take a couple of days to sync, so it's best to get them started
 - **Install dependencies:**
 
     ```bash
-    sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python3 python3-zmq zlib1g-dev wget libcurl4-gnutls-dev bsdmainutils automake curl libsodium-dev jq libfmt-dev autotools-dev cmake clang htop libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libssl-dev -y
+    sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python3 python3-zmq zlib1g-dev wget libcurl4-gnutls-dev bsdmainutils automake curl libsodium-dev jq libfmt-dev autotools-dev cmake clang htop libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libssl-dev libnanomsg-dev -y
     ```
 
 ---
@@ -224,18 +227,6 @@ The daemons will take a couple of days to sync, so it's best to get them started
 ## Install Iguana
 
 Iguana is the software used to perform notarizations, and needs to be installed from the [dPoW](https://github.com/KomodoPlatform/dPoW) repository.
-
-- **Install nanomsg** (required for Iguana):
-
-    ```bash
-    cd ~
-    git clone https://github.com/nanomsg/nanomsg
-    cd nanomsg
-    cmake . -DNN_TESTS=OFF -DNN_ENABLE_DOC=OFF
-    make -j2
-    sudo make install
-    sudo ldconfig
-    ```
 
 - **Clone the dPoW repository and build Iguana**:
 
@@ -255,13 +246,6 @@ Iguana is the software used to perform notarizations, and needs to be installed 
     ```bash
     echo "pubkey=<YOUR_MAIN_PUBKEY>" > ~/dPoW/iguana/pubkey.txt
     echo "pubkey=<YOUR_3P_PUBKEY>" > ~/dPoW/iguana/pubkey_3p.txt
-    ```
-
-    Some scripts will also look for these files in the `komodo/src` folder, so we'll create a couple more symlinks:
-
-    ```bash
-    ln -s ~/dPoW/iguana/pubkey.txt ~/komodo/src/pubkey.txt
-    ln -s ~/dPoW/iguana/pubkey_3p.txt ~/komodo/src/pubkey_3p.txt
     ```
 
 - **Create `wp` files**:
@@ -285,11 +269,11 @@ curl --url "http://127.0.0.1:7779" --data '{
 }'
 ```
 
-- Make the files executable:
+- Restrict file permissions and make executable:
 
 ```bash
-chmod +x ~/dPoW/iguana/wp_7776
-chmod +x ~/dPoW/iguana/wp_7779
+chmod 700 ~/dPoW/iguana/wp_7776
+chmod 700 ~/dPoW/iguana/wp_7779
 ```
 
 ---
@@ -334,6 +318,13 @@ chmod +x ~/dPoW/iguana/wp_7779
     chmod 600 ~/.komodo/komodo.conf
     ```
 
+    symlink pubkey files to komodo directory:
+
+    ```bash
+    ln -s ~/dPoW/iguana/pubkey.txt ~/komodo/src/pubkey.txt
+    ln -s ~/dPoW/iguana/pubkey_3p.txt ~/komodo/src/pubkey_3p.txt
+    ```
+
 ---
 
 ## Install LTC
@@ -375,10 +366,11 @@ chmod +x ~/dPoW/iguana/wp_7779
     addnode=103.195.100.32 # Dragonhound_DEV
     ```
 
-- Restrict access to the `litecoin.conf` file
+- Restrict access to the `litecoin.conf` file and `.litecoin` directory.
 
     ```bash
     chmod 600 ~/.litecoin/litecoin.conf
+    chmod 700 ~/.litecoin
     ```
 
 ---
@@ -441,17 +433,19 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
 
     ```
 
-- **Import your private keys**
+
+- **Import your private keys** to each coin daemon. Ensure that a space is added at the beginning of each command to prevent the key being saved to `~/.bash_history`.
+- eg, `komodo-cli importprivkey <KEY>` will be saved to bash history, but ` komodo-cli importprivkey <KEY>` will not.
 
     ```bash
     # For Komodo
-    komodo-cli importprivkey <KMD_PRIVATE_KEY>
+     komodo-cli importprivkey <KMD_PRIVATE_KEY>
 
     # For Litecoin
-    litecoin-cli importprivkey <KMD_PRIVATE_KEY>
+     litecoin-cli importprivkey <KMD_PRIVATE_KEY>
 
     # For individual main smart chains (replace <TICKER> with the smart chain ticker)
-    komodo-cli -ac_name=<TICKER> importprivkey <KMD_PRIVATE_KEY>
+     komodo-cli -ac_name=<TICKER> importprivkey <KMD_PRIVATE_KEY>
 
     # For all main smart chains
     cd ~/dPoW/iguana

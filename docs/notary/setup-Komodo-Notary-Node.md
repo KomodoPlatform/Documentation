@@ -219,7 +219,7 @@ The daemons will take a couple of days to sync, so it's best to get them started
 - **Install dependencies:**
 
     ```bash
-    sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python3 python3-zmq zlib1g-dev wget libcurl4-gnutls-dev bsdmainutils automake curl libsodium-dev jq libfmt-dev autotools-dev cmake clang htop libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libssl-dev -y
+    sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python3 python3-zmq zlib1g-dev wget libcurl4-gnutls-dev bsdmainutils automake curl libsodium-dev jq libfmt-dev autotools-dev cmake clang htop libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libssl-dev libnanomsg-dev -y
     ```
 
 ---
@@ -227,18 +227,6 @@ The daemons will take a couple of days to sync, so it's best to get them started
 ## Install Iguana
 
 Iguana is the software used to perform notarizations, and needs to be installed from the [dPoW](https://github.com/KomodoPlatform/dPoW) repository.
-
-- **Install nanomsg** (required for Iguana):
-
-    ```bash
-    cd ~
-    git clone https://github.com/nanomsg/nanomsg
-    cd nanomsg
-    cmake . -DNN_TESTS=OFF -DNN_ENABLE_DOC=OFF
-    make -j2
-    sudo make install
-    sudo ldconfig
-    ```
 
 - **Clone the dPoW repository and build Iguana**:
 

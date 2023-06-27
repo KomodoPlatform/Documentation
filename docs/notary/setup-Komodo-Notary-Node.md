@@ -366,10 +366,11 @@ chmod 700 ~/dPoW/iguana/wp_7779
     addnode=103.195.100.32 # Dragonhound_DEV
     ```
 
-- Restrict access to the `litecoin.conf` file
+- Restrict access to the `litecoin.conf` file and `.litecoin` directory.
 
     ```bash
     chmod 600 ~/.litecoin/litecoin.conf
+    chmod 700 ~/.litecoin
     ```
 
 ---

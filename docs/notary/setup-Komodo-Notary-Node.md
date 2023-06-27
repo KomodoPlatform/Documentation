@@ -432,17 +432,19 @@ If you need help, please reach out to the Komodo Discord #notary-node channel.
 
     ```
 
-- **Import your private keys**
+
+- **Import your private keys** to each coin daemon. Ensure that a space is added at the beginning of each command to prevent the key being saved to `~/.bash_history`.
+- eg, `komodo-cli importprivkey <KEY>` will be saved to bash history, but ` komodo-cli importprivkey <KEY>` will not.
 
     ```bash
     # For Komodo
-    komodo-cli importprivkey <KMD_PRIVATE_KEY>
+     komodo-cli importprivkey <KMD_PRIVATE_KEY>
 
     # For Litecoin
-    litecoin-cli importprivkey <KMD_PRIVATE_KEY>
+     litecoin-cli importprivkey <KMD_PRIVATE_KEY>
 
     # For individual main smart chains (replace <TICKER> with the smart chain ticker)
-    komodo-cli -ac_name=<TICKER> importprivkey <KMD_PRIVATE_KEY>
+     komodo-cli -ac_name=<TICKER> importprivkey <KMD_PRIVATE_KEY>
 
     # For all main smart chains
     cd ~/dPoW/iguana

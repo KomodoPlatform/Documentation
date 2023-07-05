@@ -1,10 +1,12 @@
 # Calculate Komodo rewards using an npm module
 
 :::warning Disclaimer
+
 When using this module after the KMD blockheight of `3484958`, please make sure the PR at https://github.com/atomiclabs/get-komodo-rewards/pull/1 is merged and the updated code is published on npm.
+
 :::
 
-This module has been created by [Luke Childs](https://github.com/lukechilds) a developer in the Komodo ecosystem.
+This module has been created by [Luke Childs](https://github.com/lukechilds).
 
 - **Source code**: [https://github.com/atomiclabs/get-komodo-rewards](https://github.com/atomiclabs/get-komodo-rewards)
 - **npm module**: [https://www.npmjs.com/package/get-komodo-rewards](https://www.npmjs.com/package/get-komodo-rewards)

@@ -27,8 +27,7 @@ Here is an [actual example](https://github.com/KomodoPlatform/atomicDEX-Desktop/
 | name                 | string  | Full name of the coin. Should match the "fname" field for an entry in the [coins repository](https://github.com/KomodoPlatform/coins/blob/master/coins#L5138). Coins on more than one network share the same name.                                                                                               |
 | type                 | string  | Defines the category or network the coin is from. For example, `ERC20` for tokens on the Ethereum network; `Smart Chain` for Komodo Platform Antara smart chains; `UTXO` for Bitcoin forks (LTC, DOGE etc)                                                                                                       |
 | coinpaprika_id       | string  | (optional) This is the coin's ID on [CoinPaprika](https://coinpaprika.com/coin/minds-minds/), used to retrieve pricing info.                                                                                                                                                                                     |
-| coingecko_id         | string  | (optional) This is the coin's ID on [CoinGecko](https://www.coingecko.com/en/coins/minds), used to retrieve pricing info.                                                                                                                                                                                        |
-| nomics_id            | string  | (optional) This is the coin's ID on [Nomics](https://nomics.com/assets/minds-minds), used to retrieve pricing info.                                                                                                                                                                                              |
+| coingecko_id         | string  | (optional) This is the coin's ID on [CoinGecko](https://www.coingecko.com/en/coins/minds), used to retrieve pricing info.                                                                                                                                                                                        |                                                                                                                                                                                            
 | nodes                | list    | (required for ERC20) A list of nodes to be used for communicating with the coin's blockchain                                                                                                                                                                                                                     |
 | electrum             | list    | (required for UTXO) A list of electrum servers to be used for communicating with the coin's blockchain. `url` is for standard TCP, `url_ws` is for websockets. `protocol` defaults to TCP, but can be set to `SSL` if the electrum server supports it.                                                           |
 | explorer_url         | list    | (required) A list of block explorers, used to link the wallets to transaction details.                                                                                                                                                                                                                           |
@@ -53,7 +52,6 @@ Check out the examples below, and if you need any more information just drop int
     "type": "Smart Chain",
     "coinpaprika_id": "tkl-tokel",
     "coingecko_id": "test-coin",
-    "nomics_id": "TKL2",
     "electrum": [
       {
         "url": "1.eu.tokel.electrum.dexstats.info:10077"
@@ -85,7 +83,6 @@ Check out the examples below, and if you need any more information just drop int
     "type": "UTXO",
     "coingecko_id": "bitcoin-cash",
     "coinpaprika_id": "bch-bitcoin-cash",
-    "nomics_id": "BCH",
     "electrum": [
       {
         "url": "electrum1.cipig.net:10055",
@@ -123,7 +120,6 @@ Check out the examples below, and if you need any more information just drop int
     "type": "ERC-20",
     "coinpaprika_id": "bat-basic-attention-token",
     "coingecko_id": "basic-attention-token",
-    "nomics_id": "BAT",
     "nodes": [
       "http://eth1.cipig.net:8555",
       "http://eth2.cipig.net:8555",
@@ -152,7 +148,6 @@ Check out the examples below, and if you need any more information just drop int
     "type": "BEP-20",
     "coinpaprika_id": "btc-bitcoin",
     "coingecko_id": "bitcoin",
-    "nomics_id": "BTC",
     "nodes": [
       "http://bsc1.cipig.net:8655",
       "http://bsc2.cipig.net:8655",
@@ -181,7 +176,6 @@ Check out the examples below, and if you need any more information just drop int
     "type": "QRC-20",
     "coinpaprika_id": "dimi-diminutive-coin",
     "coingecko_id": "diminutive-coin",
-    "nomics_id": "DIMI",
     "explorer_url": [
       "https://explorer.qtum.org/"
     ],
@@ -205,7 +199,6 @@ Check out the examples below, and if you need any more information just drop int
     "type": "Matic",
     "coinpaprika_id": "comp-compoundd",
     "coingecko_id": "compound-governance-token",
-    "nomics_id": "COMP",
     "nodes": [
       "https://polygon-rpc.com"
     ],
@@ -239,7 +232,7 @@ By default, Network tokens will use the [same color](https://github.com/KomodoPl
 
 ## Upload a Coin Icon
 
-Generally the best quality icon image would be sourced directly from the project developing the coin. Alternatively, it could be sourced from a 3rd party such as [http://cryptoicons.co/](http://cryptoicons.co/), a block explorer, [CoinPaprika](https://coinpaprika.com), [CoinGecko](https://www.coingecko.com), or [Nomics](https://nomics.com)
+Generally the best quality icon image would be sourced directly from the project developing the coin. Alternatively, it could be sourced from a 3rd party such as [http://cryptoicons.co/](http://cryptoicons.co/), a block explorer, [CoinPaprika](https://coinpaprika.com), or [CoinGecko](https://www.coingecko.com).
 
 If you have [created a new smart chain](../../smart-chains/smart-chain-tutorials/create-a-default-smart-chain.html) and need a designer to help with creating an icon, there is much talent within the [Komodian community](https://discord.gg/53dxfFWj3x)
 

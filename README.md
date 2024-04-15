@@ -1,4 +1,6 @@
-# Readme
+# ARCHIVED
+
+Latest version at https://github.com/KomodoPlatform/komodo-docs-mdx
 
 Komodo documentation uses [Vuepress](https://vuepress.vuejs.org/). 
 
